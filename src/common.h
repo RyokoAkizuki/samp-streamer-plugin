@@ -62,7 +62,7 @@ inline void intrusive_ptr_release(T *t)
 #include <boost/intrusive_ptr.hpp>
 #include <boost/tuple/tuple.hpp>
 
-#include <Eigen/Core>
+#include <eigen3/Eigen/Core>
 
 #include <sampgdk/sampgdk.h>
 

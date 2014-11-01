@@ -28,7 +28,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/unordered_map.hpp>
 
-#include <Eigen/Core>
+#include <eigen3/Eigen/Core>
 
 #include <limits>
 #include <string>

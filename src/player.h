@@ -25,7 +25,7 @@
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
 
-#include <Eigen/Core>
+#include <eigen3/Eigen/Core>
 
 #include <bitset>
 

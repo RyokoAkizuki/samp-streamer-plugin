@@ -29,7 +29,7 @@
 #include <boost/unordered_set.hpp>
 #include <boost/variant.hpp>
 
-#include <Eigen/Core>
+#include <eigen3/Eigen/Core>
 
 #include <bitset>
 #include <limits>

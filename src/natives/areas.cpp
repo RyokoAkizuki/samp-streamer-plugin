@@ -29,7 +29,7 @@
 #include <boost/unordered_set.hpp>
 #include <boost/variant.hpp>
 
-#include <Eigen/Core>
+#include <eigen3/Eigen/Core>
 
 cell AMX_NATIVE_CALL Natives::CreateDynamicCircle(AMX *amx, cell *params)
 {
