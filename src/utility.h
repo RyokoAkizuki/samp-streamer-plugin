@@ -31,11 +31,6 @@
 
 namespace Utility
 {
-	cell AMX_NATIVE_CALL hookedNative(AMX *amx, cell *params);
-
-	int checkInterfaceAndRegisterNatives(AMX *amx, AMX_NATIVE_INFO *amxNativeList);
-	void destroyAllItemsInInterface(AMX *amx);
-
 	boost::unordered_map<int, Item::SharedArea>::iterator destroyArea(boost::unordered_map<int, Item::SharedArea>::iterator a);
 	boost::unordered_map<int, Item::SharedCheckpoint>::iterator destroyCheckpoint(boost::unordered_map<int, Item::SharedCheckpoint>::iterator c);
 	boost::unordered_map<int, Item::SharedMapIcon>::iterator destroyMapIcon(boost::unordered_map<int, Item::SharedMapIcon>::iterator m);
@@ -337,10 +332,6 @@ namespace Utility
 
 	void convertArrayToPolygon(AMX *amx, cell input, cell size, Polygon2D &polygon);
 	bool convertPolygonToArray(AMX *amx, cell output, cell size, Polygon2D &polygon);
-	std::string convertNativeStringToString(AMX *amx, cell input);
-	void convertStringToNativeString(AMX *amx, cell output, cell size, std::string string);
-	void storeFloatInNative(AMX *amx, cell output, float number);
-	void storeIntegerInNative(AMX *amx, cell output, int number);
 }
 
 #endif

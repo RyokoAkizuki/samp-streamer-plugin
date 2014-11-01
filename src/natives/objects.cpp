@@ -33,9 +33,8 @@
 #include <limits>
 #include <string>
 
-cell AMX_NATIVE_CALL Natives::CreateDynamicObject(AMX *amx, cell *params)
+int Natives::CreateDynamicObject(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(12, "CreateDynamicObject");
 	if (core->getData()->getMaxItems(STREAMER_TYPE_OBJECT) == core->getData()->objects.size())
 	{
 		return 0;
@@ -57,9 +56,8 @@ cell AMX_NATIVE_CALL Natives::CreateDynamicObject(AMX *amx, cell *params)
 	return static_cast<cell>(objectID);
 }
 
-cell AMX_NATIVE_CALL Natives::DestroyDynamicObject(AMX *amx, cell *params)
+int Natives::DestroyDynamicObject(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(1, "DestroyDynamicObject");
 	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
 	if (o != core->getData()->objects.end())
 	{
@@ -69,9 +67,8 @@ cell AMX_NATIVE_CALL Natives::DestroyDynamicObject(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::IsValidDynamicObject(AMX *amx, cell *params)
+int Natives::IsValidDynamicObject(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(1, "IsValidDynamicObject");
 	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
 	if (o != core->getData()->objects.end())
 	{
@@ -80,9 +77,8 @@ cell AMX_NATIVE_CALL Natives::IsValidDynamicObject(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::SetDynamicObjectPos(AMX *amx, cell *params)
+int Natives::SetDynamicObjectPos(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(4, "SetDynamicObjectPos");
 	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
 	if (o != core->getData()->objects.end())
 	{
@@ -120,9 +116,8 @@ cell AMX_NATIVE_CALL Natives::SetDynamicObjectPos(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::GetDynamicObjectPos(AMX *amx, cell *params)
+int Natives::GetDynamicObjectPos(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(4, "GetDynamicObjectPos");
 	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
 	if (o != core->getData()->objects.end())
 	{
@@ -138,9 +133,8 @@ cell AMX_NATIVE_CALL Natives::GetDynamicObjectPos(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::SetDynamicObjectRot(AMX *amx, cell *params)
+int Natives::SetDynamicObjectRot(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(4, "SetDynamicObjectRot");
 	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
 	if (o != core->getData()->objects.end())
 	{
@@ -166,9 +160,8 @@ cell AMX_NATIVE_CALL Natives::SetDynamicObjectRot(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::GetDynamicObjectRot(AMX *amx, cell *params)
+int Natives::GetDynamicObjectRot(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(4, "GetDynamicObjectRot");
 	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
 	if (o != core->getData()->objects.end())
 	{
@@ -184,9 +177,8 @@ cell AMX_NATIVE_CALL Natives::GetDynamicObjectRot(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::MoveDynamicObject(AMX *amx, cell *params)
+int Natives::MoveDynamicObject(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(8, "MoveDynamicObject");
 	if (!amx_ctof(params[5]))
 	{
 		return 0;
@@ -229,9 +221,8 @@ cell AMX_NATIVE_CALL Natives::MoveDynamicObject(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::StopDynamicObject(AMX *amx, cell *params)
+int Natives::StopDynamicObject(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(1, "StopDynamicObject");
 	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
 	if (o != core->getData()->objects.end())
 	{
@@ -253,9 +244,8 @@ cell AMX_NATIVE_CALL Natives::StopDynamicObject(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::IsDynamicObjectMoving(AMX *amx, cell *params)
+int Natives::IsDynamicObjectMoving(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(1, "IsDynamicObjectMoving");
 	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
 	if (o != core->getData()->objects.end())
 	{
@@ -267,9 +257,8 @@ cell AMX_NATIVE_CALL Natives::IsDynamicObjectMoving(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::AttachCameraToDynamicObject(AMX *amx, cell *params)
+int Natives::AttachCameraToDynamicObject(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(2, "AttachCameraToDynamicObject");
 	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
 	if (p != core->getData()->players.end())
 	{
@@ -283,9 +272,8 @@ cell AMX_NATIVE_CALL Natives::AttachCameraToDynamicObject(AMX *amx, cell *params
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::AttachDynamicObjectToVehicle(AMX *amx, cell *params)
+int Natives::AttachDynamicObjectToVehicle(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(8, "AttachDynamicObjectToVehicle");
 	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
 	if (o != core->getData()->objects.end())
 	{
@@ -332,9 +320,8 @@ cell AMX_NATIVE_CALL Natives::AttachDynamicObjectToVehicle(AMX *amx, cell *param
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::EditDynamicObject(AMX *amx, cell *params)
+int Natives::EditDynamicObject(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(2, "EditDynamicObject");
 	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
 	if (p != core->getData()->players.end())
 	{
@@ -349,9 +336,8 @@ cell AMX_NATIVE_CALL Natives::EditDynamicObject(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::GetDynamicObjectMaterial(AMX *amx, cell *params)
+int Natives::GetDynamicObjectMaterial(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(8, "GetDynamicObjectMaterial");
 	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
 	if (o != core->getData()->objects.end())
 	{
@@ -371,9 +357,8 @@ cell AMX_NATIVE_CALL Natives::GetDynamicObjectMaterial(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::SetDynamicObjectMaterial(AMX *amx, cell *params)
+int Natives::SetDynamicObjectMaterial(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(6, "SetDynamicObjectMaterial");
 	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
 	if (o != core->getData()->objects.end())
 	{
@@ -397,9 +382,8 @@ cell AMX_NATIVE_CALL Natives::SetDynamicObjectMaterial(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::GetDynamicObjectMaterialText(AMX *amx, cell *params)
+int Natives::GetDynamicObjectMaterialText(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(12, "GetDynamicObjectMaterialText");
 	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
 	if (o != core->getData()->objects.end())
 	{
@@ -423,9 +407,8 @@ cell AMX_NATIVE_CALL Natives::GetDynamicObjectMaterialText(AMX *amx, cell *param
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::SetDynamicObjectMaterialText(AMX *amx, cell *params)
+int Natives::SetDynamicObjectMaterialText(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(10, "SetDynamicObjectMaterialText");
 	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
 	if (o != core->getData()->objects.end())
 	{

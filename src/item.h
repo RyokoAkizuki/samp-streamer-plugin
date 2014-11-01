@@ -41,7 +41,6 @@ namespace Item
 	{
 		Area();
 
-		AMX *amx;
 		int areaID;
 		SharedCell cell;
 		Eigen::Vector2f height;
@@ -80,7 +79,6 @@ namespace Item
 	{
 		Checkpoint();
 
-		AMX *amx;
 		SharedCell cell;
 		int checkpointID;
 		Eigen::Vector3f position;
@@ -102,7 +100,6 @@ namespace Item
 	{
 		MapIcon();
 
-		AMX *amx;
 		SharedCell cell;
 		int color;
 		int mapIconID;
@@ -126,7 +123,6 @@ namespace Item
 	{
 		Object();
 
-		AMX *amx;
 		SharedCell cell;
 		float drawDistance;
 		int modelID;
@@ -216,7 +212,6 @@ namespace Item
 	{
 		Pickup();
 
-		AMX *amx;
 		SharedCell cell;
 		int modelID;
 		int pickupID;
@@ -240,7 +235,6 @@ namespace Item
 	{
 		RaceCheckpoint();
 
-		AMX *amx;
 		SharedCell cell;
 		Eigen::Vector3f next;
 		Eigen::Vector3f position;
@@ -264,7 +258,6 @@ namespace Item
 	{
 		TextLabel();
 
-		AMX *amx;
 		SharedCell cell;
 		int color;
 		float drawDistance;

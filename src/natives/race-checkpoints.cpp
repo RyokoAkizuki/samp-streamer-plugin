@@ -29,9 +29,8 @@
 
 #include <eigen3/Eigen/Core>
 
-cell AMX_NATIVE_CALL Natives::CreateDynamicRaceCP(AMX *amx, cell *params)
+int Natives::CreateDynamicRaceCP(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(12, "CreateDynamicRaceCP");
 	if (core->getData()->getMaxItems(STREAMER_TYPE_RACE_CP) == core->getData()->raceCheckpoints.size())
 	{
 		return 0;
@@ -53,9 +52,8 @@ cell AMX_NATIVE_CALL Natives::CreateDynamicRaceCP(AMX *amx, cell *params)
 	return static_cast<cell>(raceCheckpointID);
 }
 
-cell AMX_NATIVE_CALL Natives::DestroyDynamicRaceCP(AMX *amx, cell *params)
+int Natives::DestroyDynamicRaceCP(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(1, "DestroyDynamicRaceCP");
 	boost::unordered_map<int, Item::SharedRaceCheckpoint>::iterator r = core->getData()->raceCheckpoints.find(static_cast<int>(params[1]));
 	if (r != core->getData()->raceCheckpoints.end())
 	{
@@ -65,9 +63,8 @@ cell AMX_NATIVE_CALL Natives::DestroyDynamicRaceCP(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::IsValidDynamicRaceCP(AMX *amx, cell *params)
+int Natives::IsValidDynamicRaceCP(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(1, "IsValidDynamicRaceCP");
 	boost::unordered_map<int, Item::SharedRaceCheckpoint>::iterator r = core->getData()->raceCheckpoints.find(static_cast<int>(params[1]));
 	if (r != core->getData()->raceCheckpoints.end())
 	{
@@ -76,9 +73,8 @@ cell AMX_NATIVE_CALL Natives::IsValidDynamicRaceCP(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::TogglePlayerDynamicRaceCP(AMX *amx, cell *params)
+int Natives::TogglePlayerDynamicRaceCP(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(3, "TogglePlayerDynamicRaceCP");
 	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
 	if (p != core->getData()->players.end())
 	{
@@ -109,9 +105,8 @@ cell AMX_NATIVE_CALL Natives::TogglePlayerDynamicRaceCP(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::TogglePlayerAllDynamicRaceCPs(AMX *amx, cell *params)
+int Natives::TogglePlayerAllDynamicRaceCPs(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(2, "TogglePlayerAllDynamicRaceCPs");
 	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
 	if (p != core->getData()->players.end())
 	{
@@ -134,9 +129,8 @@ cell AMX_NATIVE_CALL Natives::TogglePlayerAllDynamicRaceCPs(AMX *amx, cell *para
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::IsPlayerInDynamicRaceCP(AMX *amx, cell *params)
+int Natives::IsPlayerInDynamicRaceCP(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(2, "IsPlayerInDynamicRaceCP");
 	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
 	if (p != core->getData()->players.end())
 	{
@@ -148,9 +142,8 @@ cell AMX_NATIVE_CALL Natives::IsPlayerInDynamicRaceCP(AMX *amx, cell *params)
 	return 0;
 }
 
-cell AMX_NATIVE_CALL Natives::GetPlayerVisibleDynamicRaceCP(AMX *amx, cell *params)
+int Natives::GetPlayerVisibleDynamicRaceCP(AMX *amx, cell *params)
 {
-	CHECK_PARAMS(1, "GetPlayerVisibleDynamicRaceCP");
 	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
 	if (p != core->getData()->players.end())
 	{

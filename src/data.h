@@ -33,8 +33,6 @@ public:
 	std::size_t getMaxItems(int type);
 	bool setMaxItems(int type, std::size_t value);
 
-	std::set<AMX*> interfaces;
-
 	boost::unordered_map<int, Item::SharedArea> areas;
 	boost::unordered_map<int, Item::SharedCheckpoint> checkpoints;
 	boost::unordered_map<int, Item::SharedMapIcon> mapIcons;
