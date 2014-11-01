@@ -22,6 +22,13 @@
 
 #include <set>
 
+#include "callbacks.hpp"
+
+/**
+ * Removed AMX interface handling. Call callbacks directly.
+ * @author Yukino Hayakawa
+ */
+
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
 {
 	if (playerid >= 0 && playerid < MAX_PLAYERS)
@@ -51,16 +58,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterCheckpoint(int playerid)
 		{
 			int checkpointid = p->second.visibleCheckpoint;
 			p->second.activeCheckpoint = checkpointid;
-			for (std::set<AMX*>::iterator a = core->getData()->interfaces.begin(); a != core->getData()->interfaces.end(); ++a)
-			{
-				int amxIndex = 0;
-				if (!amx_FindPublic(*a, "OnPlayerEnterDynamicCP", &amxIndex))
-				{
-					amx_Push(*a, static_cast<cell>(checkpointid));
-					amx_Push(*a, static_cast<cell>(playerid));
-					amx_Exec(*a, NULL, amxIndex);
-				}
-			}
+			OnPlayerEnterDynamicCP(playerid, checkpointid);
 		}
 	}
 	return true;
@@ -75,16 +73,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerLeaveCheckpoint(int playerid)
 		{
 			int checkpointid = p->second.activeCheckpoint;
 			p->second.activeCheckpoint = 0;
-			for (std::set<AMX*>::iterator a = core->getData()->interfaces.begin(); a != core->getData()->interfaces.end(); ++a)
-			{
-				int amxIndex = 0;
-				if (!amx_FindPublic(*a, "OnPlayerLeaveDynamicCP", &amxIndex))
-				{
-					amx_Push(*a, static_cast<cell>(checkpointid));
-					amx_Push(*a, static_cast<cell>(playerid));
-					amx_Exec(*a, NULL, amxIndex);
-				}
-			}
+			OnPlayerLeaveDynamicCP(playerid, checkpointid);
 		}
 	}
 	return true;
@@ -99,16 +88,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterRaceCheckpoint(int playerid)
 		{
 			int checkpointid = p->second.visibleRaceCheckpoint;
 			p->second.activeRaceCheckpoint = checkpointid;
-			for (std::set<AMX*>::iterator a = core->getData()->interfaces.begin(); a != core->getData()->interfaces.end(); ++a)
-			{
-				int amxIndex = 0;
-				if (!amx_FindPublic(*a, "OnPlayerEnterDynamicRaceCP", &amxIndex))
-				{
-					amx_Push(*a, static_cast<cell>(checkpointid));
-					amx_Push(*a, static_cast<cell>(playerid));
-					amx_Exec(*a, NULL, amxIndex);
-				}
-			}
+			OnPlayerEnterDynamicRaceCP(pickupid, checkpointid);
 		}
 	}
 	return true;
@@ -123,16 +103,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerLeaveRaceCheckpoint(int playerid)
 		{
 			int checkpointid = p->second.activeRaceCheckpoint;
 			p->second.activeRaceCheckpoint = 0;
-			for (std::set<AMX*>::iterator a = core->getData()->interfaces.begin(); a != core->getData()->interfaces.end(); ++a)
-			{
-				int amxIndex = 0;
-				if (!amx_FindPublic(*a, "OnPlayerLeaveDynamicRaceCP", &amxIndex))
-				{
-					amx_Push(*a, static_cast<cell>(checkpointid));
-					amx_Push(*a, static_cast<cell>(playerid));
-					amx_Exec(*a, NULL, amxIndex);
-				}
-			}
+			OnPlayerLeaveDynamicRaceCP(pickupid, checkpointid);
 		}
 	}
 	return true;
@@ -145,16 +116,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerPickUpPickup(int playerid, int pickupid)
 		if (i->second == pickupid)
 		{
 			int pickupid = i->first;
-			for (std::set<AMX*>::iterator a = core->getData()->interfaces.begin(); a != core->getData()->interfaces.end(); ++a)
-			{
-				int amxIndex = 0;
-				if (!amx_FindPublic(*a, "OnPlayerPickUpDynamicPickup", &amxIndex))
-				{
-					amx_Push(*a, static_cast<cell>(pickupid));
-					amx_Push(*a, static_cast<cell>(playerid));
-					amx_Exec(*a, NULL, amxIndex);
-				}
-			}
+			OnPlayerPickUpDynamicPickup(pickupid, pickupid);
 			break;
 		}
 	}
@@ -173,23 +135,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEditObject(int playerid, bool playerobjec
 				if (i->second == objectid)
 				{
 					int objectid = i->first;
-					for (std::set<AMX*>::iterator a = core->getData()->interfaces.begin(); a != core->getData()->interfaces.end(); ++a)
-					{
-						int amxIndex = 0;
-						if (!amx_FindPublic(*a, "OnPlayerEditDynamicObject", &amxIndex))
-						{
-							amx_Push(*a, amx_ftoc(fRotZ));
-							amx_Push(*a, amx_ftoc(fRotY));
-							amx_Push(*a, amx_ftoc(fRotX));
-							amx_Push(*a, amx_ftoc(fZ));
-							amx_Push(*a, amx_ftoc(fY));
-							amx_Push(*a, amx_ftoc(fX));
-							amx_Push(*a, static_cast<cell>(response));
-							amx_Push(*a, static_cast<cell>(objectid));
-							amx_Push(*a, static_cast<cell>(playerid));
-							amx_Exec(*a, NULL, amxIndex);
-						}
-					}
+					OnPlayerEditDynamicObject(playerid, objectid, response, fX, fY, fZ, fRotX, fRotY, fRotZ);
 					break;
 				}
 			}
@@ -210,20 +156,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSelectObject(int playerid, int type, int 
 				if (i->second == objectid)
 				{
 					int objectid = i->first;
-					for (std::set<AMX*>::iterator a = core->getData()->interfaces.begin(); a != core->getData()->interfaces.end(); ++a)
-					{
-						int amxIndex = 0;
-						if (!amx_FindPublic(*a, "OnPlayerSelectDynamicObject", &amxIndex))
-						{
-							amx_Push(*a, amx_ftoc(z));
-							amx_Push(*a, amx_ftoc(y));
-							amx_Push(*a, amx_ftoc(x));
-							amx_Push(*a, static_cast<cell>(modelid));
-							amx_Push(*a, static_cast<cell>(objectid));
-							amx_Push(*a, static_cast<cell>(playerid));
-							amx_Exec(*a, NULL, amxIndex);
-						}
-					}
+					OnPlayerSelectDynamicObject(playerid, objectid, modelid, x, y, z);
 					break;
 				}
 			}
@@ -244,20 +177,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerWeaponShot(int playerid, int weaponid, in
 				if (i->second == hitid)
 				{
 					int objectid = i->first;
-					for (std::set<AMX*>::iterator a = core->getData()->interfaces.begin(); a != core->getData()->interfaces.end(); ++a)
-					{
-						int amxIndex = 0;
-						if (!amx_FindPublic(*a, "OnPlayerShootDynamicObject", &amxIndex))
-						{
-							amx_Push(*a, amx_ftoc(z));
-							amx_Push(*a, amx_ftoc(y));
-							amx_Push(*a, amx_ftoc(x));
-							amx_Push(*a, static_cast<cell>(objectid));
-							amx_Push(*a, static_cast<cell>(weaponid));
-							amx_Push(*a, static_cast<cell>(playerid));
-							amx_Exec(*a, NULL, amxIndex);
-						}
-					}
+					OnPlayerShootDynamicObject(playerid, weaponid, objectid, x, y, z);
 					break;
 				}
 			}
