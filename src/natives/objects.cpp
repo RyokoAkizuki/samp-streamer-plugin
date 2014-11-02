@@ -33,7 +33,7 @@
 #include <limits>
 #include <string>
 
-int Natives::CreateDynamicObject(AMX *amx, cell *params)
+int Natives::CreateDynamicObject(int modelid, float x, float y, float z, float rx, float ry, float rz, int worldid, int interiorid, int playerid, float streamdistance, float drawdistance)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_OBJECT) == core->getData()->objects.size())
 	{
@@ -43,47 +43,47 @@ int Natives::CreateDynamicObject(AMX *amx, cell *params)
 	Item::SharedObject object(new Item::Object);
 	object->amx = amx;
 	object->objectID = objectID;
-	object->modelID = static_cast<int>(params[1]);
-	object->position = Eigen::Vector3f(amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]));
-	object->rotation = Eigen::Vector3f(amx_ctof(params[5]), amx_ctof(params[6]), amx_ctof(params[7]));
-	Utility::addToContainer(object->worlds, static_cast<int>(params[8]));
-	Utility::addToContainer(object->interiors, static_cast<int>(params[9]));
-	Utility::addToContainer(object->players, static_cast<int>(params[10]));
-	object->streamDistance = amx_ctof(params[11]) * amx_ctof(params[11]);
-	object->drawDistance = amx_ctof(params[12]);
+	object->modelID = modelid;
+	object->position = Eigen::Vector3f(x, y, z);
+	object->rotation = Eigen::Vector3f(rx, ry, rz);
+	Utility::addToContainer(object->worlds, worldid);
+	Utility::addToContainer(object->interiors, interiorid);
+	Utility::addToContainer(object->players, playerid);
+	object->streamDistance = streamdistance * streamdistance;
+	object->drawDistance = drawdistance;
 	core->getGrid()->addObject(object);
 	core->getData()->objects.insert(std::make_pair(objectID, object));
-	return static_cast<cell>(objectID);
+	return objectID;
 }
 
-int Natives::DestroyDynamicObject(AMX *amx, cell *params)
+bool Natives::DestroyDynamicObject(int objectid)
 {
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
 		Utility::destroyObject(o);
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsValidDynamicObject(AMX *amx, cell *params)
+bool Natives::IsValidDynamicObject(int objectid)
 {
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::SetDynamicObjectPos(AMX *amx, cell *params)
+bool Natives::SetDynamicObjectPos(int objectid, float x, float y, float z)
 {
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
 		Eigen::Vector3f position = o->second->position;
-		o->second->position = Eigen::Vector3f(amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]));
+		o->second->position = Eigen::Vector3f(x, y, z);
 		for (boost::unordered_map<int, Player>::iterator p = core->getData()->players.begin(); p != core->getData()->players.end(); ++p)
 		{
 			boost::unordered_map<int, int>::iterator i = p->second.internalObjects.find(o->first);
@@ -111,34 +111,34 @@ int Natives::SetDynamicObjectPos(AMX *amx, cell *params)
 			}
 			o->second->move->time = boost::chrono::steady_clock::now();
 		}
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::GetDynamicObjectPos(AMX *amx, cell *params)
+bool Natives::GetDynamicObjectPos(int objectid, float& x, float& y, float& z)
 {
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
 		if (o->second->move)
 		{
 			core->getStreamer()->processActiveItems();
 		}
-		Utility::storeFloatInNative(amx, params[2], o->second->position[0]);
-		Utility::storeFloatInNative(amx, params[3], o->second->position[1]);
-		Utility::storeFloatInNative(amx, params[4], o->second->position[2]);
-		return 1;
+		x = o->second->position[0];
+		y = o->second->position[1];
+		z = o->second->position[2];
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::SetDynamicObjectRot(AMX *amx, cell *params)
+bool Natives::SetDynamicObjectRot(int objectid, float rx, float ry, float rz)
 {
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
-		o->second->rotation = Eigen::Vector3f(amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]));
+		o->second->rotation = Eigen::Vector3f(rx, ry, rz);
 		for (boost::unordered_map<int, Player>::iterator p = core->getData()->players.begin(); p != core->getData()->players.end(); ++p)
 		{
 			boost::unordered_map<int, int>::iterator i = p->second.internalObjects.find(o->first);
@@ -155,35 +155,35 @@ int Natives::SetDynamicObjectRot(AMX *amx, cell *params)
 				o->second->move->rotation.get<2>() = (o->second->move->rotation.get<0>() - o->second->rotation) / static_cast<float>(o->second->move->duration);
 			}
 		}
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::GetDynamicObjectRot(AMX *amx, cell *params)
+bool Natives::GetDynamicObjectRot(int objectid, float& rx, float& ry, float& rz)
 {
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
 		if (o->second->move)
 		{
 			core->getStreamer()->processActiveItems();
 		}
-		Utility::storeFloatInNative(amx, params[2], o->second->rotation[0]);
-		Utility::storeFloatInNative(amx, params[3], o->second->rotation[1]);
-		Utility::storeFloatInNative(amx, params[4], o->second->rotation[2]);
-		return 1;
+		rx = o->second->rotation[0];
+		ry = o->second->rotation[1];
+		rz = o->second->rotation[2];
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::MoveDynamicObject(AMX *amx, cell *params)
+int Natives::MoveDynamicObject(int objectid, float x, float y, float z, float speed, float rx, float ry, float rz)
 {
-	if (!amx_ctof(params[5]))
+	if (!speed)
 	{
 		return 0;
 	}
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
 		if (o->second->attach)
@@ -191,10 +191,10 @@ int Natives::MoveDynamicObject(AMX *amx, cell *params)
 			sampgdk::logprintf("MoveDynamicObject: Object is currently attached and cannot be moved");
 			return 0;
 		}
-		Eigen::Vector3f position(amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]));
-		Eigen::Vector3f rotation(amx_ctof(params[6]), amx_ctof(params[7]), amx_ctof(params[8]));
+		Eigen::Vector3f position(x, y, z);
+		Eigen::Vector3f rotation(rx, ry, rz);
 		o->second->move = boost::intrusive_ptr<Item::Object::Move>(new Item::Object::Move);
-		o->second->move->duration = static_cast<int>((static_cast<float>(boost::geometry::distance(position, o->second->position) / amx_ctof(params[5])) * 1000.0f));
+		o->second->move->duration = static_cast<int>((static_cast<float>(boost::geometry::distance(position, o->second->position) / speed) * 1000.0f));
 		o->second->move->position.get<0>() = position;
 		o->second->move->position.get<1>() = o->second->position;
 		o->second->move->position.get<2>() = (position - o->second->position) / static_cast<float>(o->second->move->duration);
@@ -204,7 +204,7 @@ int Natives::MoveDynamicObject(AMX *amx, cell *params)
 			o->second->move->rotation.get<1>() = o->second->rotation;
 			o->second->move->rotation.get<2>() = (rotation - o->second->rotation) / static_cast<float>(o->second->move->duration);
 		}
-		o->second->move->speed = amx_ctof(params[5]);
+		o->second->move->speed = speed;
 		o->second->move->time = boost::chrono::steady_clock::now();
 		for (boost::unordered_map<int, Player>::iterator p = core->getData()->players.begin(); p != core->getData()->players.end(); ++p)
 		{
@@ -216,14 +216,14 @@ int Natives::MoveDynamicObject(AMX *amx, cell *params)
 			}
 		}
 		core->getStreamer()->movingObjects.insert(o->second);
-		return static_cast<cell>(o->second->move->duration);
+		return o->second->move->duration;
 	}
 	return 0;
 }
 
-int Natives::StopDynamicObject(AMX *amx, cell *params)
+bool Natives::StopDynamicObject(int objectid)
 {
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
 		if (o->second->move)
@@ -238,54 +238,54 @@ int Natives::StopDynamicObject(AMX *amx, cell *params)
 			}
 			o->second->move.reset();
 			core->getStreamer()->movingObjects.erase(o->second);
-			return 1;
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsDynamicObjectMoving(AMX *amx, cell *params)
+bool Natives::IsDynamicObjectMoving(int objectid)
 {
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
 		if (o->second->move)
 		{
-			return 1;
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::AttachCameraToDynamicObject(AMX *amx, cell *params)
+bool Natives::AttachCameraToDynamicObject(int playerid, int objectid)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
-		boost::unordered_map<int, int>::iterator i = p->second.internalObjects.find(static_cast<int>(params[2]));
+		boost::unordered_map<int, int>::iterator i = p->second.internalObjects.find(objectid);
 		if (i != p->second.internalObjects.end())
 		{
 			AttachCameraToPlayerObject(p->first, i->second);
-			return 1;
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::AttachDynamicObjectToVehicle(AMX *amx, cell *params)
+bool Natives::AttachDynamicObjectToVehicle(int objectid, int vehicleid, float offsetx, float offsety, float offsetz, float rx, float ry, float rz)
 {
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
 		if (o->second->move)
 		{
 			sampgdk::logprintf("AttachDynamicObjectToVehicle: Object is currently moving and cannot be attached");
-			return 0;
+			return false;
 		}
 		o->second->attach = boost::intrusive_ptr<Item::Object::Attach>(new Item::Object::Attach);
-		o->second->attach->vehicle = static_cast<int>(params[2]);
-		o->second->attach->offset = Eigen::Vector3f(amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]));
-		o->second->attach->rotation = Eigen::Vector3f(amx_ctof(params[6]), amx_ctof(params[7]), amx_ctof(params[8]));
+		o->second->attach->vehicle = vehicleid;
+		o->second->attach->offset = Eigen::Vector3f(offsetx, offsety, offsetz);
+		o->second->attach->rotation = Eigen::Vector3f(rx, ry, rz);
 		for (boost::unordered_map<int, Player>::iterator p = core->getData()->players.begin(); p != core->getData()->players.end(); ++p)
 		{
 			boost::unordered_map<int, int>::iterator i = p->second.internalObjects.find(o->first);
@@ -305,7 +305,7 @@ int Natives::AttachDynamicObjectToVehicle(AMX *amx, cell *params)
 				}
 			}
 		}
-		if (static_cast<int>(params[2]) != INVALID_GENERIC_ID)
+		if (vehicleid != INVALID_GENERIC_ID)
 		{
 			core->getStreamer()->attachedObjects.insert(o->second);
 		}
@@ -315,59 +315,59 @@ int Natives::AttachDynamicObjectToVehicle(AMX *amx, cell *params)
 			core->getStreamer()->attachedObjects.erase(o->second);
 			core->getGrid()->removeObject(o->second, true);
 		}
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::EditDynamicObject(AMX *amx, cell *params)
+bool Natives::EditDynamicObject(int playerid, int objectid)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
 		core->getStreamer()->startManualUpdate(p->second, true);
-		boost::unordered_map<int, int>::iterator i = p->second.internalObjects.find(static_cast<int>(params[2]));
+		boost::unordered_map<int, int>::iterator i = p->second.internalObjects.find(objectid);
 		if (i != p->second.internalObjects.end())
 		{
 			EditPlayerObject(p->first, i->second);
-			return 1;
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::GetDynamicObjectMaterial(AMX *amx, cell *params)
+bool Natives::GetDynamicObjectMaterial(int objectid, int materialindex, int& modelid, std::string& txdname, std::string& texturename, int& materialcolor)
 {
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
-		boost::unordered_map<int, Item::Object::Material>::iterator m = o->second->materials.find(static_cast<int>(params[2]));
+		boost::unordered_map<int, Item::Object::Material>::iterator m = o->second->materials.find(materialindex);
 		if (m != o->second->materials.end())
 		{
 			if (m->second.main)
 			{
-				Utility::storeIntegerInNative(amx, params[3], m->second.main->modelID);
-				Utility::convertStringToNativeString(amx, params[4], params[7], m->second.main->txdFileName);
-				Utility::convertStringToNativeString(amx, params[5], params[8], m->second.main->textureName);
-				Utility::storeIntegerInNative(amx, params[6], m->second.main->materialColor);
-				return 1;
+				modelid = m->second.main->modelID;
+				txdname = m->second.main->txdFileName;
+				texturename = m->second.main->textureName;
+				materialcolor = m->second.main->materialColor;
+				return true;
 			}
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::SetDynamicObjectMaterial(AMX *amx, cell *params)
+bool Natives::SetDynamicObjectMaterial(int objectid, int materialindex, int modelid, const std::string& txdname, const std::string& texturename, int materialcolor)
 {
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
-		int index = static_cast<int>(params[2]);
+		int index = materialindex;
 		o->second->materials[index].main = boost::intrusive_ptr<Item::Object::Material::Main>(new Item::Object::Material::Main);
-		o->second->materials[index].main->modelID = static_cast<int>(params[3]);
-		o->second->materials[index].main->txdFileName = Utility::convertNativeStringToString(amx, params[4]);
-		o->second->materials[index].main->textureName = Utility::convertNativeStringToString(amx, params[5]);
-		o->second->materials[index].main->materialColor = static_cast<int>(params[6]);
+		o->second->materials[index].main->modelID = modelid;
+		o->second->materials[index].main->txdFileName = txdname;
+		o->second->materials[index].main->textureName = texturename;
+		o->second->materials[index].main->materialColor = materialcolor;
 		for (boost::unordered_map<int, Player>::iterator p = core->getData()->players.begin(); p != core->getData()->players.end(); ++p)
 		{
 			boost::unordered_map<int, int>::iterator i = p->second.internalObjects.find(o->first);
@@ -377,51 +377,51 @@ int Natives::SetDynamicObjectMaterial(AMX *amx, cell *params)
 			}
 		}
 		o->second->materials[index].text.reset();
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::GetDynamicObjectMaterialText(AMX *amx, cell *params)
+bool Natives::GetDynamicObjectMaterialText(int objectid, int materialindex, std::string& text, int& materialsize, std::string& fontface, int& fontsize, bool& bold, int& fontcolor, int& backcolor, int& textalignment)
 {
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
-		boost::unordered_map<int, Item::Object::Material>::iterator m = o->second->materials.find(static_cast<int>(params[2]));
+		boost::unordered_map<int, Item::Object::Material>::iterator m = o->second->materials.find(materialindex);
 		if (m != o->second->materials.end())
 		{
 			if (m->second.text)
 			{
-				Utility::convertStringToNativeString(amx, params[3], params[11], m->second.text->materialText);
-				Utility::storeIntegerInNative(amx, params[4], m->second.text->materialSize);
-				Utility::convertStringToNativeString(amx, params[5], params[12], m->second.text->fontFace);
-				Utility::storeIntegerInNative(amx, params[6], m->second.text->fontSize);
-				Utility::storeIntegerInNative(amx, params[7], m->second.text->bold != 0);
-				Utility::storeIntegerInNative(amx, params[8], m->second.text->fontColor);
-				Utility::storeIntegerInNative(amx, params[9], m->second.text->backColor);
-				Utility::storeIntegerInNative(amx, params[10], m->second.text->textAlignment);
-				return 1;
+				text = m->second.text->materialText;
+				materialsize = m->second.text->materialSize;
+				fontface = m->second.text->fontFace;
+				fontsize = m->second.text->fontSize;
+				bold = m->second.text->bold != 0;
+				fontcolor = m->second.text->fontColor;
+				backcolor = m->second.text->backColor;
+				textalignment = m->second.text->textAlignment;
+				return true;
 			}
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::SetDynamicObjectMaterialText(AMX *amx, cell *params)
+bool Natives::SetDynamicObjectMaterialText(int objectid, int materialindex, const std::string& text, int materialsize, const std::string& fontface, int fontsize, bool bold, int fontcolor, int backcolor, int textalignment)
 {
-	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedObject>::iterator o = core->getData()->objects.find(objectid);
 	if (o != core->getData()->objects.end())
 	{
-		int index = static_cast<int>(params[2]);
+		int index = materialindex;
 		o->second->materials[index].text = boost::intrusive_ptr<Item::Object::Material::Text>(new Item::Object::Material::Text);
-		o->second->materials[index].text->materialText = Utility::convertNativeStringToString(amx, params[3]);
-		o->second->materials[index].text->materialSize = static_cast<int>(params[4]);
-		o->second->materials[index].text->fontFace = Utility::convertNativeStringToString(amx, params[5]);
-		o->second->materials[index].text->fontSize = static_cast<int>(params[6]);
-		o->second->materials[index].text->bold = static_cast<int>(params[7]) != 0;
-		o->second->materials[index].text->fontColor = static_cast<int>(params[8]);
-		o->second->materials[index].text->backColor = static_cast<int>(params[9]);
-		o->second->materials[index].text->textAlignment = static_cast<int>(params[10]);
+		o->second->materials[index].text->materialText = text;
+		o->second->materials[index].text->materialSize = materialsize;
+		o->second->materials[index].text->fontFace = fontface;
+		o->second->materials[index].text->fontSize = fontsize;
+		o->second->materials[index].text->bold = bold;
+		o->second->materials[index].text->fontColor = fontcolor;
+		o->second->materials[index].text->backColor = backcolor;
+		o->second->materials[index].text->textAlignment = textalignment;
 		for (boost::unordered_map<int, Player>::iterator p = core->getData()->players.begin(); p != core->getData()->players.end(); ++p)
 		{
 			boost::unordered_map<int, int>::iterator i = p->second.internalObjects.find(o->first);
@@ -431,7 +431,7 @@ int Natives::SetDynamicObjectMaterialText(AMX *amx, cell *params)
 			}
 		}
 		o->second->materials[index].main.reset();
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }

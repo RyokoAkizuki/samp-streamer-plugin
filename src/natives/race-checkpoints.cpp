@@ -29,7 +29,7 @@
 
 #include <eigen3/Eigen/Core>
 
-int Natives::CreateDynamicRaceCP(AMX *amx, cell *params)
+int Natives::CreateDynamicRaceCP(int type, float x, float y, float z, float nextx, float nexty, float nextz, float size, int worldid, int interiorid, int playerid, float streamdistance)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_RACE_CP) == core->getData()->raceCheckpoints.size())
 	{
@@ -39,79 +39,79 @@ int Natives::CreateDynamicRaceCP(AMX *amx, cell *params)
 	Item::SharedRaceCheckpoint raceCheckpoint(new Item::RaceCheckpoint);
 	raceCheckpoint->amx = amx;
 	raceCheckpoint->raceCheckpointID = raceCheckpointID;
-	raceCheckpoint->type = static_cast<int>(params[1]);
-	raceCheckpoint->position = Eigen::Vector3f(amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4]));
-	raceCheckpoint->next = Eigen::Vector3f(amx_ctof(params[5]), amx_ctof(params[6]), amx_ctof(params[7]));
-	raceCheckpoint->size = amx_ctof(params[8]);
-	Utility::addToContainer(raceCheckpoint->worlds, static_cast<int>(params[9]));
-	Utility::addToContainer(raceCheckpoint->interiors, static_cast<int>(params[10]));
-	Utility::addToContainer(raceCheckpoint->players, static_cast<int>(params[11]));
-	raceCheckpoint->streamDistance = amx_ctof(params[12]) * amx_ctof(params[12]);
+	raceCheckpoint->type = type;
+	raceCheckpoint->position = Eigen::Vector3f(x, y, z);
+	raceCheckpoint->next = Eigen::Vector3f(nextx, nexty, nextz);
+	raceCheckpoint->size = size;
+	Utility::addToContainer(raceCheckpoint->worlds, worldid);
+	Utility::addToContainer(raceCheckpoint->interiors, interiorid);
+	Utility::addToContainer(raceCheckpoint->players, playerid);
+	raceCheckpoint->streamDistance = streamdistance * streamdistance;
 	core->getGrid()->addRaceCheckpoint(raceCheckpoint);
 	core->getData()->raceCheckpoints.insert(std::make_pair(raceCheckpointID, raceCheckpoint));
-	return static_cast<cell>(raceCheckpointID);
+	return raceCheckpointID;
 }
 
-int Natives::DestroyDynamicRaceCP(AMX *amx, cell *params)
+bool Natives::DestroyDynamicRaceCP(int checkpointid)
 {
-	boost::unordered_map<int, Item::SharedRaceCheckpoint>::iterator r = core->getData()->raceCheckpoints.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedRaceCheckpoint>::iterator r = core->getData()->raceCheckpoints.find(checkpointid);
 	if (r != core->getData()->raceCheckpoints.end())
 	{
 		Utility::destroyRaceCheckpoint(r);
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsValidDynamicRaceCP(AMX *amx, cell *params)
+bool Natives::IsValidDynamicRaceCP(int checkpointid)
 {
-	boost::unordered_map<int, Item::SharedRaceCheckpoint>::iterator r = core->getData()->raceCheckpoints.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedRaceCheckpoint>::iterator r = core->getData()->raceCheckpoints.find(checkpointid);
 	if (r != core->getData()->raceCheckpoints.end())
 	{
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::TogglePlayerDynamicRaceCP(AMX *amx, cell *params)
+bool Natives::TogglePlayerDynamicRaceCP(int playerid, int checkpointid, bool toggle)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
-		boost::unordered_set<int>::iterator d = p->second.disabledRaceCheckpoints.find(static_cast<int>(params[2]));
-		if (static_cast<int>(params[3]))
+		boost::unordered_set<int>::iterator d = p->second.disabledRaceCheckpoints.find(checkpointid);
+		if (toggle)
 		{
 			if (d != p->second.disabledRaceCheckpoints.end())
 			{
 				p->second.disabledRaceCheckpoints.quick_erase(d);
-				return 1;
+				return true;
 			}
 		}
 		else
 		{
 			if (d == p->second.disabledRaceCheckpoints.end())
 			{
-				if (p->second.visibleRaceCheckpoint == static_cast<int>(params[2]))
+				if (p->second.visibleRaceCheckpoint == checkpointid)
 				{
 					DisablePlayerRaceCheckpoint(p->first);
 					p->second.activeRaceCheckpoint = 0;
 					p->second.visibleRaceCheckpoint = 0;
 				}
-				p->second.disabledRaceCheckpoints.insert(static_cast<int>(params[2]));
-				return 1;
+				p->second.disabledRaceCheckpoints.insert(checkpointid);
+				return true;
 			}
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::TogglePlayerAllDynamicRaceCPs(AMX *amx, cell *params)
+bool Natives::TogglePlayerAllDynamicRaceCPs(int playerid, bool toggle)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
 		p->second.disabledRaceCheckpoints.clear();
-		if (!static_cast<int>(params[2]))
+		if (!toggle)
 		{
 			if (p->second.visibleRaceCheckpoint != 0)
 			{
@@ -124,30 +124,30 @@ int Natives::TogglePlayerAllDynamicRaceCPs(AMX *amx, cell *params)
 				p->second.disabledRaceCheckpoints.insert(r->first);
 			}
 		}
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsPlayerInDynamicRaceCP(AMX *amx, cell *params)
+bool Natives::IsPlayerInDynamicRaceCP(int playerid, int checkpointid)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
-		if (p->second.activeRaceCheckpoint == static_cast<int>(params[2]))
+		if (p->second.activeRaceCheckpoint == checkpointid)
 		{
-			return 1;
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::GetPlayerVisibleDynamicRaceCP(AMX *amx, cell *params)
+bool Natives::GetPlayerVisibleDynamicRaceCP(int playerid)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
 		return p->second.visibleRaceCheckpoint;
 	}
-	return 0;
+	return false;
 }

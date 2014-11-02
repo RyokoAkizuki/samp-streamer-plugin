@@ -29,7 +29,7 @@
 
 #include <eigen3/Eigen/Core>
 
-int Natives::CreateDynamicCP(AMX *amx, cell *params)
+int Natives::CreateDynamicCP(float x, float y, float z, float size, int worldid, int interiorid, int playerid, float streamdistance)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_CP) == core->getData()->checkpoints.size())
 	{
@@ -39,77 +39,77 @@ int Natives::CreateDynamicCP(AMX *amx, cell *params)
 	Item::SharedCheckpoint checkpoint(new Item::Checkpoint);
 	checkpoint->amx = amx;
 	checkpoint->checkpointID = checkpointID;
-	checkpoint->position = Eigen::Vector3f(amx_ctof(params[1]), amx_ctof(params[2]), amx_ctof(params[3]));
-	checkpoint->size = amx_ctof(params[4]);
-	Utility::addToContainer(checkpoint->worlds, static_cast<int>(params[5]));
-	Utility::addToContainer(checkpoint->interiors, static_cast<int>(params[6]));
-	Utility::addToContainer(checkpoint->players, static_cast<int>(params[7]));
-	checkpoint->streamDistance = amx_ctof(params[8]) * amx_ctof(params[8]);
+	checkpoint->position = Eigen::Vector3f(x, y, z);
+	checkpoint->size = size;
+	Utility::addToContainer(checkpoint->worlds, worldid);
+	Utility::addToContainer(checkpoint->interiors, interiorid);
+	Utility::addToContainer(checkpoint->players, playerid);
+	checkpoint->streamDistance = streamdistance * streamdistance;
 	core->getGrid()->addCheckpoint(checkpoint);
 	core->getData()->checkpoints.insert(std::make_pair(checkpointID, checkpoint));
-	return static_cast<cell>(checkpointID);
+	return checkpointID;
 }
 
-int Natives::DestroyDynamicCP(AMX *amx, cell *params)
+bool Natives::DestroyDynamicCP(int checkpointid)
 {
-	boost::unordered_map<int, Item::SharedCheckpoint>::iterator c = core->getData()->checkpoints.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedCheckpoint>::iterator c = core->getData()->checkpoints.find(checkpointid);
 	if (c != core->getData()->checkpoints.end())
 	{
 		Utility::destroyCheckpoint(c);
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsValidDynamicCP(AMX *amx, cell *params)
+bool Natives::IsValidDynamicCP(int checkpointid)
 {
-	boost::unordered_map<int, Item::SharedCheckpoint>::iterator c = core->getData()->checkpoints.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedCheckpoint>::iterator c = core->getData()->checkpoints.find(checkpointid);
 	if (c != core->getData()->checkpoints.end())
 	{
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::TogglePlayerDynamicCP(AMX *amx, cell *params)
+bool Natives::TogglePlayerDynamicCP(int playerid, int checkpointid, bool toggle)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
-		boost::unordered_set<int>::iterator d = p->second.disabledCheckpoints.find(static_cast<int>(params[2]));
-		if (static_cast<int>(params[3]))
+		boost::unordered_set<int>::iterator d = p->second.disabledCheckpoints.find(checkpointid);
+		if (toggle)
 		{
 			if (d != p->second.disabledCheckpoints.end())
 			{
 				p->second.disabledCheckpoints.quick_erase(d);
-				return 1;
+				return true;
 			}
 		}
 		else
 		{
 			if (d == p->second.disabledCheckpoints.end())
 			{
-				if (p->second.visibleCheckpoint == static_cast<int>(params[2]))
+				if (p->second.visibleCheckpoint == checkpointid)
 				{
 					DisablePlayerCheckpoint(p->first);
 					p->second.activeCheckpoint = 0;
 					p->second.visibleCheckpoint = 0;
 				}
-				p->second.disabledCheckpoints.insert(static_cast<int>(params[2]));
-				return 1;
+				p->second.disabledCheckpoints.insert(checkpointid);
+				return true;
 			}
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::TogglePlayerAllDynamicCPs(AMX *amx, cell *params)
+bool Natives::TogglePlayerAllDynamicCPs(int playerid, bool toggle)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
 		p->second.disabledCheckpoints.clear();
-		if (!static_cast<int>(params[2]))
+		if (!toggle)
 		{
 			if (p->second.visibleCheckpoint != 0)
 			{
@@ -122,27 +122,27 @@ int Natives::TogglePlayerAllDynamicCPs(AMX *amx, cell *params)
 				p->second.disabledCheckpoints.insert(c->first);
 			}
 		}
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsPlayerInDynamicCP(AMX *amx, cell *params)
+bool Natives::IsPlayerInDynamicCP(int playerid, int checkpointid)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
-		if (p->second.activeCheckpoint == static_cast<int>(params[2]))
+		if (p->second.activeCheckpoint == checkpointid)
 		{
-			return 1;
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::GetPlayerVisibleDynamicCP(AMX *amx, cell *params)
+int Natives::GetPlayerVisibleDynamicCP(int playerid)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
 		return p->second.visibleCheckpoint;

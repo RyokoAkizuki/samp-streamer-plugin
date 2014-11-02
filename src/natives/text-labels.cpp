@@ -31,7 +31,7 @@
 
 #include <string>
 
-int Natives::CreateDynamic3DTextLabel(AMX *amx, cell *params)
+int Natives::CreateDynamic3DTextLabel(const std::string& text, int color, float x, float y, float z, float drawdistance, int attachedplayer, int attachedvehicle, bool testlos, int worldid, int interiorid, int playerid, float streamdistance)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_3D_TEXT_LABEL) == core->getData()->textLabels.size())
 	{
@@ -41,72 +41,70 @@ int Natives::CreateDynamic3DTextLabel(AMX *amx, cell *params)
 	Item::SharedTextLabel textLabel(new Item::TextLabel);
 	textLabel->amx = amx;
 	textLabel->textLabelID = textLabelID;
-	textLabel->text = Utility::convertNativeStringToString(amx, params[1]);
-	textLabel->color = static_cast<int>(params[2]);
-	textLabel->position = Eigen::Vector3f(amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]));
-	textLabel->drawDistance = amx_ctof(params[6]);
-	if (static_cast<int>(params[7]) != INVALID_GENERIC_ID || static_cast<int>(params[8]) != INVALID_GENERIC_ID)
+	textLabel->text = text;
+	textLabel->color = color;
+	textLabel->position = Eigen::Vector3f(x, y, z);
+	textLabel->drawDistance = streamdistance;
+	if (attachedplayer != INVALID_GENERIC_ID || attachedvehicle != INVALID_GENERIC_ID)
 	{
 		textLabel->attach = boost::intrusive_ptr<Item::TextLabel::Attach>(new Item::TextLabel::Attach);
-		textLabel->attach->player = static_cast<int>(params[7]);
-		textLabel->attach->vehicle = static_cast<int>(params[8]);
+		textLabel->attach->player = attachedplayer;
+		textLabel->attach->vehicle = attachedvehicle;
 		if (textLabel->position.cwiseAbs().maxCoeff() > 50.0f)
 		{
 			textLabel->position.setZero();
 		}
 		core->getStreamer()->attachedTextLabels.insert(textLabel);
 	}
-	textLabel->testLOS = static_cast<int>(params[9]) != 0;
-	Utility::addToContainer(textLabel->worlds, static_cast<int>(params[10]));
-	Utility::addToContainer(textLabel->interiors, static_cast<int>(params[11]));
-	Utility::addToContainer(textLabel->players, static_cast<int>(params[12]));
-	textLabel->streamDistance = amx_ctof(params[13]) * amx_ctof(params[13]);
+	textLabel->testLOS = testlos != 0;
+	Utility::addToContainer(textLabel->worlds, worldid);
+	Utility::addToContainer(textLabel->interiors, interiorid);
+	Utility::addToContainer(textLabel->players, playerid);
+	textLabel->streamDistance = streamdistance * streamdistance;
 	core->getGrid()->addTextLabel(textLabel);
 	core->getData()->textLabels.insert(std::make_pair(textLabelID, textLabel));
-	return static_cast<cell>(textLabelID);
+	return textLabelID;
 }
 
-int Natives::DestroyDynamic3DTextLabel(AMX *amx, cell *params)
+bool Natives::DestroyDynamic3DTextLabel(int id)
 {
-	boost::unordered_map<int, Item::SharedTextLabel>::iterator t = core->getData()->textLabels.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedTextLabel>::iterator t = core->getData()->textLabels.find(id);
 	if (t != core->getData()->textLabels.end())
 	{
 		Utility::destroyTextLabel(t);
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsValidDynamic3DTextLabel(AMX *amx, cell *params)
+bool Natives::IsValidDynamic3DTextLabel(int id)
 {
-	boost::unordered_map<int, Item::SharedTextLabel>::iterator t = core->getData()->textLabels.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedTextLabel>::iterator t = core->getData()->textLabels.find(id);
 	if (t != core->getData()->textLabels.end())
 	{
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::GetDynamic3DTextLabelText(AMX *amx, cell *params)
+bool Natives::GetDynamic3DTextLabelText(int id, std::string& text)
 {
-	boost::unordered_map<int, Item::SharedTextLabel>::iterator t = core->getData()->textLabels.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedTextLabel>::iterator t = core->getData()->textLabels.find(id);
 	if (t != core->getData()->textLabels.end())
 	{
-		cell *text = NULL;
-		amx_GetAddr(amx, params[2], &text);
-		amx_SetString(text, t->second->text.c_str(), 0, 0, static_cast<size_t>(params[3]));
-		return 1;
+		text = t->second->text;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::UpdateDynamic3DTextLabelText(AMX *amx, cell *params)
+bool Natives::UpdateDynamic3DTextLabelText(int id, int color, const std::string& text)
 {
-	boost::unordered_map<int, Item::SharedTextLabel>::iterator t = core->getData()->textLabels.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedTextLabel>::iterator t = core->getData()->textLabels.find(id);
 	if (t != core->getData()->textLabels.end())
 	{
-		t->second->color = static_cast<int>(params[2]);
-		t->second->text = Utility::convertNativeStringToString(amx, params[3]);
+		t->second->color = color;
+		t->second->text = text;
 		for (boost::unordered_map<int, Player>::iterator p = core->getData()->players.begin(); p != core->getData()->players.end(); ++p)
 		{
 			boost::unordered_map<int, int>::iterator i = p->second.internalTextLabels.find(t->first);
@@ -115,7 +113,7 @@ int Natives::UpdateDynamic3DTextLabelText(AMX *amx, cell *params)
 				UpdatePlayer3DTextLabelText(p->first, i->second, t->second->color, t->second->text.c_str());
 			}
 		}
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }

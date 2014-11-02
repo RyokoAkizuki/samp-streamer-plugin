@@ -330,8 +330,7 @@ namespace Utility
 		return true;
 	}
 
-	void convertArrayToPolygon(AMX *amx, cell input, cell size, Polygon2D &polygon);
-	bool convertPolygonToArray(AMX *amx, cell output, cell size, Polygon2D &polygon);
+	void convertArrayToPolygon(const std::vector<float>& points, Polygon2D &polygon);
 }
 
 #endif

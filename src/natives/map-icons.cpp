@@ -29,7 +29,7 @@
 
 #include <eigen3/Eigen/Core>
 
-int Natives::CreateDynamicMapIcon(AMX *amx, cell *params)
+int Natives::CreateDynamicMapIcon(float x, float y, float z, int type, int color, int worldid, int interiorid, int playerid, float streamdistance, int style)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_MAP_ICON) == core->getData()->mapIcons.size())
 	{
@@ -39,36 +39,36 @@ int Natives::CreateDynamicMapIcon(AMX *amx, cell *params)
 	Item::SharedMapIcon mapIcon(new Item::MapIcon);
 	mapIcon->amx = amx;
 	mapIcon->mapIconID = mapIconID;
-	mapIcon->position = Eigen::Vector3f(amx_ctof(params[1]), amx_ctof(params[2]), amx_ctof(params[3]));
-	mapIcon->type = static_cast<int>(params[4]);
-	mapIcon->color = static_cast<int>(params[5]);
-	Utility::addToContainer(mapIcon->worlds, static_cast<int>(params[6]));
-	Utility::addToContainer(mapIcon->interiors, static_cast<int>(params[7]));
-	Utility::addToContainer(mapIcon->players, static_cast<int>(params[8]));
-	mapIcon->streamDistance = amx_ctof(params[9]) * amx_ctof(params[9]);
-	mapIcon->style = static_cast<int>(params[10]);
+	mapIcon->position = Eigen::Vector3f(x, y, z);
+	mapIcon->type = type;
+	mapIcon->color = color;
+	Utility::addToContainer(mapIcon->worlds, worldid);
+	Utility::addToContainer(mapIcon->interiors, interiorid);
+	Utility::addToContainer(mapIcon->players, playerid);
+	mapIcon->streamDistance = streamdistance * streamdistance;
+	mapIcon->style = style;
 	core->getGrid()->addMapIcon(mapIcon);
 	core->getData()->mapIcons.insert(std::make_pair(mapIconID, mapIcon));
-	return static_cast<cell>(mapIconID);
+	return mapIconID;
 }
 
-int Natives::DestroyDynamicMapIcon(AMX *amx, cell *params)
+bool Natives::DestroyDynamicMapIcon(int iconid)
 {
-	boost::unordered_map<int, Item::SharedMapIcon>::iterator m = core->getData()->mapIcons.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedMapIcon>::iterator m = core->getData()->mapIcons.find(iconid);
 	if (m != core->getData()->mapIcons.end())
 	{
 		Utility::destroyMapIcon(m);
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsValidDynamicMapIcon(AMX *amx, cell *params)
+bool Natives::IsValidDynamicMapIcon(int iconid)
 {
-	boost::unordered_map<int, Item::SharedMapIcon>::iterator m = core->getData()->mapIcons.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedMapIcon>::iterator m = core->getData()->mapIcons.find(iconid);
 	if (m != core->getData()->mapIcons.end())
 	{
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }

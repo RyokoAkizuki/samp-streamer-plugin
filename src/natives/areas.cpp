@@ -31,7 +31,7 @@
 
 #include <eigen3/Eigen/Core>
 
-int Natives::CreateDynamicCircle(AMX *amx, cell *params)
+int Natives::CreateDynamicCircle(float x, float y, float size, int worldid, int interiorid, int playerid)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_AREA) == core->getData()->areas.size())
 	{
@@ -42,17 +42,17 @@ int Natives::CreateDynamicCircle(AMX *amx, cell *params)
 	area->amx = amx;
 	area->areaID = areaID;
 	area->type = STREAMER_AREA_TYPE_CIRCLE;
-	area->position = Eigen::Vector2f(amx_ctof(params[1]), amx_ctof(params[2]));
-	area->size = amx_ctof(params[3]) * amx_ctof(params[3]);
-	Utility::addToContainer(area->worlds, static_cast<int>(params[4]));
-	Utility::addToContainer(area->interiors, static_cast<int>(params[5]));
-	Utility::addToContainer(area->players, static_cast<int>(params[6]));
+	area->position = Eigen::Vector2f(x, y);
+	area->size = size * size;
+	Utility::addToContainer(area->worlds, worldid);
+	Utility::addToContainer(area->interiors, interiorid);
+	Utility::addToContainer(area->players, playerid);
 	core->getGrid()->addArea(area);
 	core->getData()->areas.insert(std::make_pair(areaID, area));
-	return static_cast<cell>(areaID);
+	return areaID;
 }
 
-int Natives::CreateDynamicCylinder(AMX *amx, cell *params)
+int Natives::CreateDynamicCylinder(float x, float y, float minz, float maxz, float size, int worldid, int interiorid, int playerid)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_AREA) == core->getData()->areas.size())
 	{
@@ -63,18 +63,18 @@ int Natives::CreateDynamicCylinder(AMX *amx, cell *params)
 	area->amx = amx;
 	area->areaID = areaID;
 	area->type = STREAMER_AREA_TYPE_CYLINDER;
-	area->position = Eigen::Vector2f(amx_ctof(params[1]), amx_ctof(params[2]));
-	area->height = Eigen::Vector2f(amx_ctof(params[3]), amx_ctof(params[4]));
-	area->size = amx_ctof(params[5]) * amx_ctof(params[5]);
-	Utility::addToContainer(area->worlds, static_cast<int>(params[6]));
-	Utility::addToContainer(area->interiors, static_cast<int>(params[7]));
-	Utility::addToContainer(area->players, static_cast<int>(params[8]));
+	area->position = Eigen::Vector2f(x, y);
+	area->height = Eigen::Vector2f(minz, maxz);
+	area->size = size * size;
+	Utility::addToContainer(area->worlds, worldid);
+	Utility::addToContainer(area->interiors, interiorid);
+	Utility::addToContainer(area->players, playerid);
 	core->getGrid()->addArea(area);
 	core->getData()->areas.insert(std::make_pair(areaID, area));
-	return static_cast<cell>(areaID);
+	return areaID;
 }
 
-int Natives::CreateDynamicSphere(AMX *amx, cell *params)
+int Natives::CreateDynamicSphere(float x, float y, float z, float size, int worldid, int interiorid, int playerid)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_AREA) == core->getData()->areas.size())
 	{
@@ -85,17 +85,17 @@ int Natives::CreateDynamicSphere(AMX *amx, cell *params)
 	area->amx = amx;
 	area->areaID = areaID;
 	area->type = STREAMER_AREA_TYPE_SPHERE;
-	area->position = Eigen::Vector3f(amx_ctof(params[1]), amx_ctof(params[2]), amx_ctof(params[3]));
-	area->size = amx_ctof(params[4]) * amx_ctof(params[4]);
-	Utility::addToContainer(area->worlds, static_cast<int>(params[5]));
-	Utility::addToContainer(area->interiors, static_cast<int>(params[6]));
-	Utility::addToContainer(area->players, static_cast<int>(params[7]));
+	area->position = Eigen::Vector3f(x, y, z);
+	area->size = size * size;
+	Utility::addToContainer(area->worlds, worldid);
+	Utility::addToContainer(area->interiors, interiorid);
+	Utility::addToContainer(area->players, playerid);
 	core->getGrid()->addArea(area);
 	core->getData()->areas.insert(std::make_pair(areaID, area));
-	return static_cast<cell>(areaID);
+	return areaID;
 }
 
-int Natives::CreateDynamicRectangle(AMX *amx, cell *params)
+int Natives::CreateDynamicRectangle(float minx, float miny, float maxx, float maxy,, int worldid, int interiorid, int playerid)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_AREA) == core->getData()->areas.size())
 	{
@@ -106,18 +106,18 @@ int Natives::CreateDynamicRectangle(AMX *amx, cell *params)
 	area->amx = amx;
 	area->areaID = areaID;
 	area->type = STREAMER_AREA_TYPE_RECTANGLE;
-	area->position = Box2D(Eigen::Vector2f(amx_ctof(params[1]), amx_ctof(params[2])), Eigen::Vector2f(amx_ctof(params[3]), amx_ctof(params[4])));
+	area->position = Box2D(Eigen::Vector2f(minx, miny), Eigen::Vector2f(maxx, maxy));
 	boost::geometry::correct(boost::get<Box2D>(area->position));
 	area->size = static_cast<float>(boost::geometry::comparable_distance(boost::get<Box2D>(area->position).min_corner(), boost::get<Box2D>(area->position).max_corner()));
-	Utility::addToContainer(area->worlds, static_cast<int>(params[5]));
-	Utility::addToContainer(area->interiors, static_cast<int>(params[6]));
-	Utility::addToContainer(area->players, static_cast<int>(params[7]));
+	Utility::addToContainer(area->worlds, worldid);
+	Utility::addToContainer(area->interiors, interiorid);
+	Utility::addToContainer(area->players, playerid);
 	core->getGrid()->addArea(area);
 	core->getData()->areas.insert(std::make_pair(areaID, area));
-	return static_cast<cell>(areaID);
+	return areaID;
 }
 
-int Natives::CreateDynamicCuboid(AMX *amx, cell *params)
+int Natives::CreateDynamicCuboid(float minx, float miny, float minz, float maxx, float maxy, float maxz, int worldid, int interiorid, int playerid)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_AREA) == core->getData()->areas.size())
 	{
@@ -128,24 +128,24 @@ int Natives::CreateDynamicCuboid(AMX *amx, cell *params)
 	area->amx = amx;
 	area->areaID = areaID;
 	area->type = STREAMER_AREA_TYPE_CUBOID;
-	area->position = Box3D(Eigen::Vector3f(amx_ctof(params[1]), amx_ctof(params[2]), amx_ctof(params[3])), Eigen::Vector3f(amx_ctof(params[4]), amx_ctof(params[5]), amx_ctof(params[6])));
+	area->position = Box3D(Eigen::Vector3f(minx, miny, minz), Eigen::Vector3f(maxx, maxy, maxz));
 	boost::geometry::correct(boost::get<Box3D>(area->position));
 	area->size = static_cast<float>(boost::geometry::comparable_distance(Eigen::Vector2f(boost::get<Box3D>(area->position).min_corner()[0], boost::get<Box3D>(area->position).min_corner()[1]), Eigen::Vector2f(boost::get<Box3D>(area->position).max_corner()[0], boost::get<Box3D>(area->position).max_corner()[1])));
-	Utility::addToContainer(area->worlds, static_cast<int>(params[7]));
-	Utility::addToContainer(area->interiors, static_cast<int>(params[8]));
-	Utility::addToContainer(area->players, static_cast<int>(params[9]));
+	Utility::addToContainer(area->worlds, worldid);
+	Utility::addToContainer(area->interiors, interiorid);
+	Utility::addToContainer(area->players, playerid);
 	core->getGrid()->addArea(area);
 	core->getData()->areas.insert(std::make_pair(areaID, area));
-	return static_cast<cell>(areaID);
+	return areaID;
 }
 
-int Natives::CreateDynamicPolygon(AMX *amx, cell *params)
+int Natives::CreateDynamicPolygon(const std::vector<float>& points, float minz = -FLOAT_INFINITY, float maxz = FLOAT_INFINITY, int worldid, int interiorid, int playerid)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_AREA) == core->getData()->areas.size())
 	{
 		return 0;
 	}
-	if (static_cast<int>(params[4] >= 2 && static_cast<int>(params[4]) % 2))
+	if (points.size() >= 2 && points.size() % 2 > 0)
 	{
 		sampgdk::logprintf("*** CreateDynamicPolygon: Number of points must be divisible by two");
 		return 0;
@@ -155,93 +155,73 @@ int Natives::CreateDynamicPolygon(AMX *amx, cell *params)
 	area->amx = amx;
 	area->areaID = areaID;
 	area->type = STREAMER_AREA_TYPE_POLYGON;
-	Utility::convertArrayToPolygon(amx, params[1], params[4], boost::get<Polygon2D>(area->position));
-	area->height = Eigen::Vector2f(amx_ctof(params[2]), amx_ctof(params[3]));
+	Utility::convertArrayToPolygon(points, boost::get<Polygon2D>(area->position));
+	area->height = Eigen::Vector2f(minz, maxz);
 	Box2D box = boost::geometry::return_envelope<Box2D>(boost::get<Polygon2D>(area->position));
 	area->size = static_cast<float>(boost::geometry::comparable_distance(box.min_corner(), box.max_corner()));
-	Utility::addToContainer(area->worlds, static_cast<int>(params[5]));
-	Utility::addToContainer(area->interiors, static_cast<int>(params[6]));
-	Utility::addToContainer(area->players, static_cast<int>(params[7]));
+	Utility::addToContainer(area->worlds, worldid);
+	Utility::addToContainer(area->interiors, interiorid);
+	Utility::addToContainer(area->players, playerid);
 	core->getGrid()->addArea(area);
 	core->getData()->areas.insert(std::make_pair(areaID, area));
-	return static_cast<cell>(areaID);
+	return areaID;
 }
 
-int Natives::DestroyDynamicArea(AMX *amx, cell *params)
+bool Natives::DestroyDynamicArea(int areaid)
 {
-	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(areaid);
 	if (a != core->getData()->areas.end())
 	{
 		Utility::destroyArea(a);
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsValidDynamicArea(AMX *amx, cell *params)
+bool Natives::IsValidDynamicArea(int areaid)
 {
-	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(areaid);
 	if (a != core->getData()->areas.end())
 	{
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::GetDynamicPolygonPoints(AMX *amx, cell *params)
+bool Natives::TogglePlayerDynamicArea(int playerid, int areaid, bool toggle)
 {
-	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(static_cast<int>(params[1]));
-	if (a != core->getData()->areas.end())
-	{
-		return static_cast<cell>(Utility::convertPolygonToArray(amx, params[2], params[3], boost::get<Polygon2D>(a->second->position)) != 0);
-	}
-	return 0;
-}
-
-int Natives::GetDynamicPolygonNumberPoints(AMX *amx, cell *params)
-{
-	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(static_cast<int>(params[1]));
-	if (a != core->getData()->areas.end())
-	{
-		return static_cast<cell>(boost::get<Polygon2D>(a->second->position).outer().size());
-	}
-	return 0;
-}
-
-int Natives::TogglePlayerDynamicArea(AMX *amx, cell *params)
-{
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
-		boost::unordered_set<int>::iterator d = p->second.disabledAreas.find(static_cast<int>(params[2]));
-		if (static_cast<int>(params[3]))
+		boost::unordered_set<int>::iterator d = p->second.disabledAreas.find(areaid);
+		if (toggle)
 		{
 			if (d != p->second.disabledAreas.end())
 			{
 				p->second.disabledAreas.quick_erase(d);
-				return 1;
+				return true;
 			}
 		}
 		else
 		{
 			if (d == p->second.disabledAreas.end())
 			{
-				p->second.disabledAreas.insert(static_cast<int>(params[2]));
-				p->second.internalAreas.erase(static_cast<int>(params[2]));
-				return 1;
+				p->second.disabledAreas.insert(areaid);
+				p->second.internalAreas.erase(areaid);
+				return true;
 			}
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::TogglePlayerAllDynamicAreas(AMX *amx, cell *params)
+bool Natives::TogglePlayerAllDynamicAreas(int playerid, bool toggle)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
 		p->second.disabledAreas.clear();
-		if (!static_cast<int>(params[2]))
+		if (!toggle)
 		{
 			for (boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.begin(); a != core->getData()->areas.end(); ++a)
 			{
@@ -249,45 +229,43 @@ int Natives::TogglePlayerAllDynamicAreas(AMX *amx, cell *params)
 			}
 			p->second.internalAreas.clear();
 		}
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsPlayerInDynamicArea(AMX *amx, cell *params)
+bool Natives::IsPlayerInDynamicArea(int playerid, int areaid, bool recheck)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
-		bool recheck = static_cast<int>(params[3]) != 0;
 		if (!recheck)
 		{
-			boost::unordered_set<int>::iterator i = p->second.internalAreas.find(static_cast<int>(params[2]));
+			boost::unordered_set<int>::iterator i = p->second.internalAreas.find(areaid);
 			if (i != p->second.internalAreas.end())
 			{
-				return 1;
+				return true;
 			}
 		}
 		else
 		{
-			boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(static_cast<int>(params[2]));
-			return static_cast<cell>(Utility::isPointInArea(p->second.position, a->second)) != 0;
+			boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(areaid);
+			return Utility::isPointInArea(p->second.position, a->second) != 0;
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsPlayerInAnyDynamicArea(AMX *amx, cell *params)
+bool Natives::IsPlayerInAnyDynamicArea(int playerid, bool recheck)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
-		bool recheck = static_cast<int>(params[2]) != 0;
 		if (!recheck)
 		{
 			if (!p->second.internalAreas.empty())
 			{
-				return 1;
+				return true;
 			}
 		}
 		else
@@ -296,22 +274,21 @@ int Natives::IsPlayerInAnyDynamicArea(AMX *amx, cell *params)
 			{
 				if (Utility::isPointInArea(p->second.position, a->second))
 				{
-					return 1;
+					return true;
 				}
 			}
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsAnyPlayerInDynamicArea(AMX *amx, cell *params)
+bool Natives::IsAnyPlayerInDynamicArea(int areaid, bool recheck)
 {
 	for (boost::unordered_map<int, Player>::iterator p = core->getData()->players.begin(); p != core->getData()->players.end(); ++p)
 	{
-		bool recheck = static_cast<int>(params[2]) != 0;
 		if (!recheck)
 		{
-			boost::unordered_set<int>::iterator i = p->second.internalAreas.find(static_cast<int>(params[1]));
+			boost::unordered_set<int>::iterator i = p->second.internalAreas.find(areaid);
 			if (i != p->second.internalAreas.end())
 			{
 				return 1;
@@ -319,23 +296,22 @@ int Natives::IsAnyPlayerInDynamicArea(AMX *amx, cell *params)
 		}
 		else
 		{
-			boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(static_cast<int>(params[1]));
-			return static_cast<cell>(Utility::isPointInArea(p->second.position, a->second)) != 0;
+			boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(areaid);
+			return Utility::isPointInArea(p->second.position, a->second) != 0;
 		}
 	}
 	return 0;
 }
 
-int Natives::IsAnyPlayerInAnyDynamicArea(AMX *amx, cell *params)
+bool Natives::IsAnyPlayerInAnyDynamicArea(bool recheck)
 {
 	for (boost::unordered_map<int, Player>::iterator p = core->getData()->players.begin(); p != core->getData()->players.end(); ++p)
 	{
-		bool recheck = static_cast<int>(params[1]) != 0;
 		if (!recheck)
 		{
 			if (!p->second.internalAreas.empty())
 			{
-				return 1;
+				return true;
 			}
 		}
 		else
@@ -344,70 +320,50 @@ int Natives::IsAnyPlayerInAnyDynamicArea(AMX *amx, cell *params)
 			{
 				if (Utility::isPointInArea(p->second.position, a->second))
 				{
-					return 1;
+					return true;
 				}
 			}
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsPointInDynamicArea(AMX *amx, cell *params)
+bool Natives::IsPointInDynamicArea(int areaid, float x, float y, float z)
 {
-	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(areaid);
 	if (a != core->getData()->areas.end())
 	{
-		return Utility::isPointInArea(Eigen::Vector3f(amx_ctof(params[2]), amx_ctof(params[3]), amx_ctof(params[4])), a->second);
+		return Utility::isPointInArea(Eigen::Vector3f(x, y, z), a->second);
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsPointInAnyDynamicArea(AMX *amx, cell *params)
+bool Natives::IsPointInAnyDynamicArea(float x, float y, float z)
 {
 	for (boost::unordered_map<int, Item::SharedArea>::const_iterator a = core->getData()->areas.begin(); a != core->getData()->areas.end(); ++a)
 	{
-		if (Utility::isPointInArea(Eigen::Vector3f(amx_ctof(params[1]), amx_ctof(params[2]), amx_ctof(params[3])), a->second))
+		if (Utility::isPointInArea(Eigen::Vector3f(x, y, z), a->second))
 		{
-			return 1;
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
-int Natives::GetPlayerDynamicAreas(AMX *amx, cell *params)
+bool Natives::AttachDynamicAreaToObject(int areaid, int objectid, int type, int playerid)
 {
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
-	if (p != core->getData()->players.end())
-	{
-		return static_cast<cell>(Utility::convertContainerToArray(amx, params[2], params[3], p->second.internalAreas) != 0);
-	}
-	return 0;
-}
-
-int Natives::GetPlayerNumberDynamicAreas(AMX *amx, cell *params)
-{
-	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(static_cast<int>(params[1]));
-	if (p != core->getData()->players.end())
-	{
-		return static_cast<cell>(p->second.internalAreas.size());
-	}
-	return 0;
-}
-
-int Natives::AttachDynamicAreaToObject(AMX *amx, cell *params)
-{
-	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(areaid);
 	if (a != core->getData()->areas.end())
 	{
 		if (a->second->type != STREAMER_AREA_TYPE_CIRCLE && a->second->type != STREAMER_AREA_TYPE_SPHERE)
 		{
 			sampgdk::logprintf("*** AttachDynamicAreaToObject: Only circles and spheres may be attached to objects");
-			return 0;
+			return false;
 		}
-		if (static_cast<int>(params[2]) != INVALID_GENERIC_ID)
+		if (objectid != INVALID_GENERIC_ID)
 		{
 			a->second->attach = boost::intrusive_ptr<Item::Area::Attach>(new Item::Area::Attach);
-			a->second->attach->object = boost::make_tuple(static_cast<int>(params[2]), static_cast<int>(params[3]), static_cast<int>(params[4]));
+			a->second->attach->object = boost::make_tuple(objectid, type, playerid);
 			a->second->attach->player = INVALID_GENERIC_ID;
 			a->second->attach->vehicle = INVALID_GENERIC_ID;
 			core->getStreamer()->attachedAreas.insert(a->second);
@@ -424,26 +380,26 @@ int Natives::AttachDynamicAreaToObject(AMX *amx, cell *params)
 				}
 			}
 		}
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::AttachDynamicAreaToPlayer(AMX *amx, cell *params)
+bool Natives::AttachDynamicAreaToPlayer(int areaid, int playerid)
 {
-	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(areaid);
 	if (a != core->getData()->areas.end())
 	{
 		if (a->second->type != STREAMER_AREA_TYPE_CIRCLE && a->second->type != STREAMER_AREA_TYPE_SPHERE)
 		{
 			sampgdk::logprintf("*** AttachDynamicAreaToPlayer: Only circles and spheres may be attached to players");
-			return 0;
+			return false;
 		}
-		if (static_cast<int>(params[2]) != INVALID_GENERIC_ID)
+		if (playerid != INVALID_GENERIC_ID)
 		{
 			a->second->attach = boost::intrusive_ptr<Item::Area::Attach>(new Item::Area::Attach);
 			a->second->attach->object.get<0>() = INVALID_GENERIC_ID;
-			a->second->attach->player = static_cast<int>(params[2]);
+			a->second->attach->player = playerid;
 			a->second->attach->vehicle = INVALID_GENERIC_ID;
 			core->getStreamer()->attachedAreas.insert(a->second);
 		}
@@ -459,27 +415,27 @@ int Natives::AttachDynamicAreaToPlayer(AMX *amx, cell *params)
 				}
 			}
 		}
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::AttachDynamicAreaToVehicle(AMX *amx, cell *params)
+int Natives::AttachDynamicAreaToVehicle(int areaid, int vehicleid)
 {
-	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(areaid);
 	if (a != core->getData()->areas.end())
 	{
 		if (a->second->type != STREAMER_AREA_TYPE_CIRCLE && a->second->type != STREAMER_AREA_TYPE_SPHERE)
 		{
 			sampgdk::logprintf("*** AttachDynamicAreaToVehicle: Only circles and spheres may be attached to vehicles");
-			return 0;
+			return false;
 		}
-		if (static_cast<int>(params[2]) != INVALID_GENERIC_ID)
+		if (vehicleid != INVALID_GENERIC_ID)
 		{
 			a->second->attach = boost::intrusive_ptr<Item::Area::Attach>(new Item::Area::Attach);
 			a->second->attach->object.get<0>() = INVALID_GENERIC_ID;
 			a->second->attach->player = INVALID_GENERIC_ID;
-			a->second->attach->vehicle = static_cast<int>(params[2]);
+			a->second->attach->vehicle = vehicleid;
 			core->getStreamer()->attachedAreas.insert(a->second);
 		}
 		else
@@ -494,7 +450,7 @@ int Natives::AttachDynamicAreaToVehicle(AMX *amx, cell *params)
 				}
 			}
 		}
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }

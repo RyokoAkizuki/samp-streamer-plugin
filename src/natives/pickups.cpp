@@ -28,7 +28,7 @@
 
 #include <eigen3/Eigen/Core>
 
-int Natives::CreateDynamicPickup(AMX *amx, cell *params)
+int Natives::CreateDynamicPickup(int modelid, int type, float x, float y, float z, int worldid, int interiorid, int playerid, float streamdistance)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_PICKUP) == core->getData()->pickups.size())
 	{
@@ -39,35 +39,35 @@ int Natives::CreateDynamicPickup(AMX *amx, cell *params)
 	pickup->amx = amx;
 	pickup->pickupID = pickupID;
 	pickup->worldID = 0;
-	pickup->modelID = static_cast<int>(params[1]);
-	pickup->type = static_cast<int>(params[2]);
-	pickup->position = Eigen::Vector3f(amx_ctof(params[3]), amx_ctof(params[4]), amx_ctof(params[5]));
-	Utility::addToContainer(pickup->worlds, static_cast<int>(params[6]));
-	Utility::addToContainer(pickup->interiors, static_cast<int>(params[7]));
-	Utility::addToContainer(pickup->players, static_cast<int>(params[8]));
-	pickup->streamDistance = amx_ctof(params[9]) * amx_ctof(params[9]);
+	pickup->modelID = modelid;
+	pickup->type = type;
+	pickup->position = Eigen::Vector3f(x, y, z);
+	Utility::addToContainer(pickup->worlds, worldid);
+	Utility::addToContainer(pickup->interiors, interiorid);
+	Utility::addToContainer(pickup->players, playerid);
+	pickup->streamDistance = streamdistance * streamdistance;
 	core->getGrid()->addPickup(pickup);
 	core->getData()->pickups.insert(std::make_pair(pickupID, pickup));
-	return static_cast<cell>(pickupID);
+	return pickupID;
 }
 
-int Natives::DestroyDynamicPickup(AMX *amx, cell *params)
+bool Natives::DestroyDynamicPickup(int pickupid)
 {
-	boost::unordered_map<int, Item::SharedPickup>::iterator p = core->getData()->pickups.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedPickup>::iterator p = core->getData()->pickups.find(pickupid);
 	if (p != core->getData()->pickups.end())
 	{
 		Utility::destroyPickup(p);
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::IsValidDynamicPickup(AMX *amx, cell *params)
+bool Natives::IsValidDynamicPickup(int pickupid)
 {
-	boost::unordered_map<int, Item::SharedPickup>::iterator p = core->getData()->pickups.find(static_cast<int>(params[1]));
+	boost::unordered_map<int, Item::SharedPickup>::iterator p = core->getData()->pickups.find(pickupid);
 	if (p != core->getData()->pickups.end())
 	{
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }

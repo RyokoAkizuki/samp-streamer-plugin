@@ -227,32 +227,13 @@ bool Utility::isPointInArea(const Eigen::Vector3f &point, const Item::SharedArea
 	return false;
 }
 
-void Utility::convertArrayToPolygon(AMX *amx, cell input, cell size, Polygon2D &polygon)
+void Utility::convertArrayToPolygon(const std::vector<float>& points, Polygon2D &polygon)
 {
-	cell *array = NULL;
 	std::vector<Eigen::Vector2f> points;
-	amx_GetAddr(amx, input, &array);
-	for (std::size_t i = 0; i < static_cast<std::size_t>(size); i += 2)
+	for (std::size_t i = 0; i < points.size(); i += 2)
 	{
-		points.push_back(Eigen::Vector2f(amx_ctof(array[i]), amx_ctof(array[i + 1])));
+		points.push_back(Eigen::Vector2f(points[i], points[i + 1]));
 	}
 	boost::geometry::assign_points(polygon, points);
 	boost::geometry::correct(polygon);
-}
-
-bool Utility::convertPolygonToArray(AMX *amx, cell output, cell size, Polygon2D &polygon)
-{
-	cell *array = NULL;
-	std::size_t i = 0;
-	amx_GetAddr(amx, output, &array);
-	for (std::vector<Eigen::Vector2f>::iterator p = polygon.outer().begin(); p != polygon.outer().end(); ++p)
-	{
-		if ((i + 1) >= static_cast<std::size_t>(size))
-		{
-			return false;
-		}
-		array[i++] = amx_ftoc(p->data()[0]);
-		array[i++] = amx_ftoc(p->data()[1]);
-	}
-	return true;
 }

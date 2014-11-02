@@ -22,65 +22,61 @@
 
 #include <boost/scoped_ptr.hpp>
 
-int Natives::Streamer_GetTickRate(AMX *amx, cell *params)
+int Natives::Streamer_GetTickRate()
 {
-	return static_cast<cell>(core->getStreamer()->getTickRate());
+	return core->getStreamer()->getTickRate();
 }
 
-int Natives::Streamer_SetTickRate(AMX *amx, cell *params)
+bool Natives::Streamer_SetTickRate(std::size_t rate)
 {
-	if (static_cast<std::size_t>(params[1]) > 0)
+	if (rate > 0)
 	{
-		core->getStreamer()->setTickRate(static_cast<std::size_t>(params[1]));
-		return 1;
+		core->getStreamer()->setTickRate(rate);
+		return true;
 	}
-	return 0;
+	return false;
 }
 
-int Natives::Streamer_GetMaxItems(AMX *amx, cell *params)
+std::size_t Natives::Streamer_GetMaxItems(int type)
 {
-	return static_cast<cell>(core->getData()->getMaxItems(static_cast<std::size_t>(params[1])));
+	return core->getData()->getMaxItems(static_cast<std::size_t>(type));
 }
 
-int Natives::Streamer_SetMaxItems(AMX *amx, cell *params)
+bool Natives::Streamer_SetMaxItems(int type, int items)
 {
-	return static_cast<cell>(core->getData()->setMaxItems(static_cast<int>(params[1]), static_cast<int>(params[2])) != 0);
+	return core->getData()->setMaxItems(type, items) != 0;
 }
 
-int Natives::Streamer_GetVisibleItems(AMX *amx, cell *params)
+std::size_t Natives::Streamer_GetVisibleItems(int type)
 {
-	return static_cast<cell>(core->getStreamer()->getVisibleItems(static_cast<std::size_t>(params[1])));
+	return core->getStreamer()->getVisibleItems(static_cast<std::size_t>(type));
 }
 
-int Natives::Streamer_SetVisibleItems(AMX *amx, cell *params)
+bool Natives::Streamer_SetVisibleItems(int type, int items)
 {
-	return static_cast<cell>(core->getStreamer()->setVisibleItems(static_cast<int>(params[1]), static_cast<int>(params[2])) != 0);
+	return core->getStreamer()->setVisibleItems(type, items) != 0;
 }
 
-int Natives::Streamer_GetCellDistance(AMX *amx, cell *params)
+float Natives::Streamer_GetCellDistance()
 {
 	float cellDistance = core->getGrid()->getCellDistance();
-	Utility::storeFloatInNative(amx, params[1], cellDistance);
-	return 1;
+	return cellDistance;
 }
 
-int Natives::Streamer_SetCellDistance(AMX *amx, cell *params)
+void Natives::Streamer_SetCellDistance(float streamdistance)
 {
-	core->getGrid()->setCellDistance(amx_ctof(params[1]) * amx_ctof(params[1]));
+	core->getGrid()->setCellDistance(streamdistance * streamdistance);
 	core->getGrid()->rebuildGrid();
-	return 1;
 }
 
-int Natives::Streamer_GetCellSize(AMX *amx, cell *params)
+float Natives::Streamer_GetCellSize()
 {
 	float cellSize = core->getGrid()->getCellSize();
-	Utility::storeFloatInNative(amx, params[1], cellSize);
-	return 1;
+	return cellSize;
 }
 
-int Natives::Streamer_SetCellSize(AMX *amx, cell *params)
+void Natives::Streamer_SetCellSize(float size)
 {
-	core->getGrid()->setCellSize(amx_ctof(params[1]));
+	core->getGrid()->setCellSize(size);
 	core->getGrid()->rebuildGrid();
-	return 1;
 }
