@@ -36,7 +36,6 @@ int Natives::CreateDynamicPickup(int modelid, int type, float x, float y, float 
 	}
 	int pickupID = Item::Pickup::identifier.get();
 	Item::SharedPickup pickup(new Item::Pickup);
-	pickup->amx = amx;
 	pickup->pickupID = pickupID;
 	pickup->worldID = 0;
 	pickup->modelID = modelid;

@@ -29,7 +29,7 @@
  * @author Yukino Hayakawa
  */
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
+bool Streamer_OnPlayerConnect(int playerid)
 {
 	if (playerid >= 0 && playerid < MAX_PLAYERS)
 	{
@@ -43,13 +43,13 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
 	return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason)
+bool Streamer_OnPlayerDisconnect(int playerid, int reason)
 {
 	core->getData()->players.erase(playerid);
 	return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterCheckpoint(int playerid)
+bool Streamer_OnPlayerEnterCheckpoint(int playerid)
 {
 	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
@@ -64,7 +64,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterCheckpoint(int playerid)
 	return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerLeaveCheckpoint(int playerid)
+bool Streamer_OnPlayerLeaveCheckpoint(int playerid)
 {
 	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
@@ -79,7 +79,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerLeaveCheckpoint(int playerid)
 	return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterRaceCheckpoint(int playerid)
+bool Streamer_OnPlayerEnterRaceCheckpoint(int playerid)
 {
 	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
@@ -88,13 +88,13 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterRaceCheckpoint(int playerid)
 		{
 			int checkpointid = p->second.visibleRaceCheckpoint;
 			p->second.activeRaceCheckpoint = checkpointid;
-			OnPlayerEnterDynamicRaceCP(pickupid, checkpointid);
+			OnPlayerEnterDynamicRaceCP(playerid, checkpointid);
 		}
 	}
 	return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerLeaveRaceCheckpoint(int playerid)
+bool Streamer_OnPlayerLeaveRaceCheckpoint(int playerid)
 {
 	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
@@ -103,27 +103,27 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerLeaveRaceCheckpoint(int playerid)
 		{
 			int checkpointid = p->second.activeRaceCheckpoint;
 			p->second.activeRaceCheckpoint = 0;
-			OnPlayerLeaveDynamicRaceCP(pickupid, checkpointid);
+			OnPlayerLeaveDynamicRaceCP(playerid, checkpointid);
 		}
 	}
 	return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerPickUpPickup(int playerid, int pickupid)
+bool Streamer_OnPlayerPickUpPickup(int playerid, int pickupid)
 {
 	for (boost::unordered_map<int, int>::iterator i = core->getStreamer()->internalPickups.begin(); i != core->getStreamer()->internalPickups.end(); ++i)
 	{
 		if (i->second == pickupid)
 		{
 			int pickupid = i->first;
-			OnPlayerPickUpDynamicPickup(pickupid, pickupid);
+			OnPlayerPickUpDynamicPickup(playerid, pickupid);
 			break;
 		}
 	}
 	return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEditObject(int playerid, bool playerobject, int objectid, int response, float fX, float fY, float fZ, float fRotX, float fRotY, float fRotZ)
+bool Streamer_OnPlayerEditObject(int playerid, bool playerobject, int objectid, int response, float fX, float fY, float fZ, float fRotX, float fRotY, float fRotZ)
 {
 	if (playerobject)
 	{
@@ -144,7 +144,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEditObject(int playerid, bool playerobjec
 	return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSelectObject(int playerid, int type, int objectid, int modelid, float x, float y, float z)
+bool Streamer_OnPlayerSelectObject(int playerid, int type, int objectid, int modelid, float x, float y, float z)
 {
 	if (type == SELECT_OBJECT_PLAYER_OBJECT)
 	{
@@ -165,7 +165,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSelectObject(int playerid, int type, int 
 	return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerWeaponShot(int playerid, int weaponid, int hittype, int hitid, float x, float y, float z)
+bool Streamer_OnPlayerWeaponShot(int playerid, int weaponid, int hittype, int hitid, float x, float y, float z)
 {
 	if (hittype == BULLET_HIT_TYPE_PLAYER_OBJECT)
 	{

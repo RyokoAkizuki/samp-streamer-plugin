@@ -18,6 +18,7 @@
 #define NATIVES_H
 
 #include <vector>
+#include <limits>
 
 #include "common.h"
 
@@ -94,9 +95,9 @@ namespace Natives
 	int  CreateDynamicCircle(float x, float y, float size, int worldid = -1, int interiorid = -1, int playerid = -1);
 	int  CreateDynamicCylinder(float x, float y, float minz, float maxz, float size, int worldid = -1, int interiorid = -1, int playerid = -1);
 	int  CreateDynamicSphere(float x, float y, float z, float size, int worldid = -1, int interiorid = -1, int playerid = -1);
-	int  CreateDynamicRectangle(float minx, float miny, float maxx, float maxy,, int worldid = -1, int interiorid = -1, int playerid = -1);
+	int  CreateDynamicRectangle(float minx, float miny, float maxx, float maxy, int worldid = -1, int interiorid = -1, int playerid = -1);
 	int  CreateDynamicCuboid(float minx, float miny, float minz, float maxx, float maxy, float maxz, int worldid = -1, int interiorid = -1, int playerid = -1);
-	int  CreateDynamicPolygon(const std::vector<float>& points, float minz = -FLOAT_INFINITY, float maxz = FLOAT_INFINITY, int worldid = -1, int interiorid = -1, int playerid = -1);
+	int  CreateDynamicPolygon(const std::vector<float>& points, float minz = std::numeric_limits<float>::min(), float maxz = std::numeric_limits<float>::max(), int worldid = -1, int interiorid = -1, int playerid = -1);
 	bool DestroyDynamicArea(int areaid);
 	bool IsValidDynamicArea(int areaid);
 	bool TogglePlayerDynamicArea(int playerid, int areaid, bool toggle);

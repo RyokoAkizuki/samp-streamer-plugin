@@ -37,7 +37,6 @@ int Natives::CreateDynamicCP(float x, float y, float z, float size, int worldid,
 	}
 	int checkpointID = Item::Checkpoint::identifier.get();
 	Item::SharedCheckpoint checkpoint(new Item::Checkpoint);
-	checkpoint->amx = amx;
 	checkpoint->checkpointID = checkpointID;
 	checkpoint->position = Eigen::Vector3f(x, y, z);
 	checkpoint->size = size;

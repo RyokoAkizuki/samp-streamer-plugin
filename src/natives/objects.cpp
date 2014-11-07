@@ -41,7 +41,6 @@ int Natives::CreateDynamicObject(int modelid, float x, float y, float z, float r
 	}
 	int objectID = Item::Object::identifier.get();
 	Item::SharedObject object(new Item::Object);
-	object->amx = amx;
 	object->objectID = objectID;
 	object->modelID = modelid;
 	object->position = Eigen::Vector3f(x, y, z);

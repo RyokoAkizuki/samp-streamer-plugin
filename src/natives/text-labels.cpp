@@ -39,7 +39,6 @@ int Natives::CreateDynamic3DTextLabel(const std::string& text, int color, float 
 	}
 	int textLabelID = Item::TextLabel::identifier.get();
 	Item::SharedTextLabel textLabel(new Item::TextLabel);
-	textLabel->amx = amx;
 	textLabel->textLabelID = textLabelID;
 	textLabel->text = text;
 	textLabel->color = color;

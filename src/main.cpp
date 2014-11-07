@@ -24,17 +24,16 @@
 
 #include <set>
 
-extern void *pAMXFunctions;
+#define SUPPORTS_PROCESS_TICK 0x20000
 
 PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
 {
-	return sampgdk::Supports() | SUPPORTS_VERSION | SUPPORTS_AMX_NATIVES | SUPPORTS_PROCESS_TICK;
+	return sampgdk::Supports() | SUPPORTS_PROCESS_TICK;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData)
 {
 	core.reset(new Core);
-	pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
 	bool load = sampgdk::Load(ppData);
 	sampgdk::logprintf("\n\n*** Streamer Plugin v%s by Incognito loaded ***\n", PLUGIN_VERSION);
 	return load;
@@ -49,5 +48,6 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload()
 
 PLUGIN_EXPORT void PLUGIN_CALL ProcessTick()
 {
+	sampgdk::ProcessTick();
 	core->getStreamer()->startAutomaticUpdate();
 }

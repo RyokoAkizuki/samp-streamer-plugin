@@ -37,7 +37,6 @@ int Natives::CreateDynamicMapIcon(float x, float y, float z, int type, int color
 	}
 	int mapIconID = Item::MapIcon::identifier.get();
 	Item::SharedMapIcon mapIcon(new Item::MapIcon);
-	mapIcon->amx = amx;
 	mapIcon->mapIconID = mapIconID;
 	mapIcon->position = Eigen::Vector3f(x, y, z);
 	mapIcon->type = type;

@@ -39,7 +39,6 @@ int Natives::CreateDynamicCircle(float x, float y, float size, int worldid, int 
 	}
 	int areaID = Item::Area::identifier.get();
 	Item::SharedArea area(new Item::Area);
-	area->amx = amx;
 	area->areaID = areaID;
 	area->type = STREAMER_AREA_TYPE_CIRCLE;
 	area->position = Eigen::Vector2f(x, y);
@@ -60,7 +59,6 @@ int Natives::CreateDynamicCylinder(float x, float y, float minz, float maxz, flo
 	}
 	int areaID = Item::Area::identifier.get();
 	Item::SharedArea area(new Item::Area);
-	area->amx = amx;
 	area->areaID = areaID;
 	area->type = STREAMER_AREA_TYPE_CYLINDER;
 	area->position = Eigen::Vector2f(x, y);
@@ -82,7 +80,6 @@ int Natives::CreateDynamicSphere(float x, float y, float z, float size, int worl
 	}
 	int areaID = Item::Area::identifier.get();
 	Item::SharedArea area(new Item::Area);
-	area->amx = amx;
 	area->areaID = areaID;
 	area->type = STREAMER_AREA_TYPE_SPHERE;
 	area->position = Eigen::Vector3f(x, y, z);
@@ -95,7 +92,7 @@ int Natives::CreateDynamicSphere(float x, float y, float z, float size, int worl
 	return areaID;
 }
 
-int Natives::CreateDynamicRectangle(float minx, float miny, float maxx, float maxy,, int worldid, int interiorid, int playerid)
+int Natives::CreateDynamicRectangle(float minx, float miny, float maxx, float maxy, int worldid, int interiorid, int playerid)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_AREA) == core->getData()->areas.size())
 	{
@@ -103,7 +100,6 @@ int Natives::CreateDynamicRectangle(float minx, float miny, float maxx, float ma
 	}
 	int areaID = Item::Area::identifier.get();
 	Item::SharedArea area(new Item::Area);
-	area->amx = amx;
 	area->areaID = areaID;
 	area->type = STREAMER_AREA_TYPE_RECTANGLE;
 	area->position = Box2D(Eigen::Vector2f(minx, miny), Eigen::Vector2f(maxx, maxy));
@@ -125,7 +121,6 @@ int Natives::CreateDynamicCuboid(float minx, float miny, float minz, float maxx,
 	}
 	int areaID = Item::Area::identifier.get();
 	Item::SharedArea area(new Item::Area);
-	area->amx = amx;
 	area->areaID = areaID;
 	area->type = STREAMER_AREA_TYPE_CUBOID;
 	area->position = Box3D(Eigen::Vector3f(minx, miny, minz), Eigen::Vector3f(maxx, maxy, maxz));
@@ -139,7 +134,7 @@ int Natives::CreateDynamicCuboid(float minx, float miny, float minz, float maxx,
 	return areaID;
 }
 
-int Natives::CreateDynamicPolygon(const std::vector<float>& points, float minz = -FLOAT_INFINITY, float maxz = FLOAT_INFINITY, int worldid, int interiorid, int playerid)
+int Natives::CreateDynamicPolygon(const std::vector<float>& points, float minz, float maxz, int worldid, int interiorid, int playerid)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_AREA) == core->getData()->areas.size())
 	{
@@ -152,7 +147,6 @@ int Natives::CreateDynamicPolygon(const std::vector<float>& points, float minz =
 	}
 	int areaID = Item::Area::identifier.get();
 	Item::SharedArea area(new Item::Area);
-	area->amx = amx;
 	area->areaID = areaID;
 	area->type = STREAMER_AREA_TYPE_POLYGON;
 	Utility::convertArrayToPolygon(points, boost::get<Polygon2D>(area->position));
@@ -420,7 +414,7 @@ bool Natives::AttachDynamicAreaToPlayer(int areaid, int playerid)
 	return false;
 }
 
-int Natives::AttachDynamicAreaToVehicle(int areaid, int vehicleid)
+bool Natives::AttachDynamicAreaToVehicle(int areaid, int vehicleid)
 {
 	boost::unordered_map<int, Item::SharedArea>::iterator a = core->getData()->areas.find(areaid);
 	if (a != core->getData()->areas.end())

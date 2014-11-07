@@ -64,7 +64,11 @@ inline void intrusive_ptr_release(T *t)
 
 #include <eigen3/Eigen/Core>
 
-#include <sampgdk/sampgdk.h>
+#include <sampgdk/core.h>
+#include <sampgdk/a_objects.h>
+#include <sampgdk/a_players.h>
+#include <sampgdk/a_samp.h>
+#include <sampgdk/a_vehicles.h>
 
 #include <utility>
 

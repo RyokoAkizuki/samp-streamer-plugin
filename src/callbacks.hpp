@@ -27,3 +27,14 @@ void OnPlayerEnterDynamicRaceCP(int playerid, int checkpointid);
 void OnPlayerLeaveDynamicRaceCP(int playerid, int checkpointid);
 void OnPlayerEnterDynamicArea(int playerid, int areaid);
 void OnPlayerLeaveDynamicArea(int playerid, int areaid);
+
+bool Streamer_OnPlayerConnect(int playerid);
+bool Streamer_OnPlayerDisconnect(int playerid, int reason);
+bool Streamer_OnPlayerEnterCheckpoint(int playerid);
+bool Streamer_OnPlayerLeaveCheckpoint(int playerid);
+bool Streamer_OnPlayerEnterRaceCheckpoint(int playerid);
+bool Streamer_OnPlayerLeaveRaceCheckpoint(int playerid);
+bool Streamer_OnPlayerPickUpPickup(int playerid, int pickupid);
+bool Streamer_OnPlayerEditObject(int playerid, bool playerobject, int objectid, int response, float fX, float fY, float fZ, float fRotX, float fRotY, float fRotZ);
+bool Streamer_OnPlayerSelectObject(int playerid, int type, int objectid, int modelid, float x, float y, float z);
+bool Streamer_OnPlayerWeaponShot(int playerid, int weaponid, int hittype, int hitid, float x, float y, float z);

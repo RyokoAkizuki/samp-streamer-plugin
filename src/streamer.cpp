@@ -19,6 +19,8 @@
 #include "core.h"
 #include "utility.h"
 
+#include "callbacks.hpp"
+
 #include <boost/chrono.hpp>
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/geometries.hpp>
@@ -138,10 +140,7 @@ void Streamer::startAutomaticUpdate()
 		processingFinalPlayer = false;
 		tickCount = 0;
 	}
-	if (!core->getData()->interfaces.empty())
-	{
-		++tickCount;
-	}
+	++tickCount;
 }
 
 void Streamer::startManualUpdate(Player &player, bool getData)
@@ -259,43 +258,17 @@ void Streamer::executeCallbacks()
 {
 	for (std::vector<boost::tuple<int, int> >::const_iterator c = areaLeaveCallbacks.begin(); c != areaLeaveCallbacks.end(); ++c)
 	{
-		for (std::set<AMX*>::iterator a = core->getData()->interfaces.begin(); a != core->getData()->interfaces.end(); ++a)
-		{
-			int amxIndex = 0;
-			if (!amx_FindPublic(*a, "OnPlayerLeaveDynamicArea", &amxIndex))
-			{
-				amx_Push(*a, static_cast<cell>(c->get<0>()));
-				amx_Push(*a, static_cast<cell>(c->get<1>()));
-				amx_Exec(*a, NULL, amxIndex);
-			}
-		}
+		OnPlayerLeaveDynamicArea(static_cast<int>(c->get<1>()), static_cast<int>(c->get<0>()));
 	}
 	areaLeaveCallbacks.clear();
 	for (std::vector<boost::tuple<int, int> >::const_iterator c = areaEnterCallbacks.begin(); c != areaEnterCallbacks.end(); ++c)
 	{
-		for (std::set<AMX*>::iterator a = core->getData()->interfaces.begin(); a != core->getData()->interfaces.end(); ++a)
-		{
-			int amxIndex = 0;
-			if (!amx_FindPublic(*a, "OnPlayerEnterDynamicArea", &amxIndex))
-			{
-				amx_Push(*a, static_cast<cell>(c->get<0>()));
-				amx_Push(*a, static_cast<cell>(c->get<1>()));
-				amx_Exec(*a, NULL, amxIndex);
-			}
-		}
+		OnPlayerEnterDynamicArea(static_cast<int>(c->get<1>()), static_cast<int>(c->get<0>()));
 	}
 	areaEnterCallbacks.clear();
 	for (std::vector<int>::const_iterator c = objectMoveCallbacks.begin(); c != objectMoveCallbacks.end(); ++c)
 	{
-		for (std::set<AMX*>::iterator a = core->getData()->interfaces.begin(); a != core->getData()->interfaces.end(); ++a)
-		{
-			int amxIndex = 0;
-			if (!amx_FindPublic(*a, "OnDynamicObjectMoved", &amxIndex))
-			{
-				amx_Push(*a, static_cast<cell>(*c));
-				amx_Exec(*a, NULL, amxIndex);
-			}
-		}
+		OnDynamicObjectMoved(static_cast<int>(*c));
 	}
 	objectMoveCallbacks.clear();
 }

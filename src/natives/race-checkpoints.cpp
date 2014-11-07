@@ -37,7 +37,6 @@ int Natives::CreateDynamicRaceCP(int type, float x, float y, float z, float next
 	}
 	int raceCheckpointID = Item::RaceCheckpoint::identifier.get();
 	Item::SharedRaceCheckpoint raceCheckpoint(new Item::RaceCheckpoint);
-	raceCheckpoint->amx = amx;
 	raceCheckpoint->raceCheckpointID = raceCheckpointID;
 	raceCheckpoint->type = type;
 	raceCheckpoint->position = Eigen::Vector3f(x, y, z);
@@ -142,12 +141,12 @@ bool Natives::IsPlayerInDynamicRaceCP(int playerid, int checkpointid)
 	return false;
 }
 
-bool Natives::GetPlayerVisibleDynamicRaceCP(int playerid)
+int Natives::GetPlayerVisibleDynamicRaceCP(int playerid)
 {
 	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
 		return p->second.visibleRaceCheckpoint;
 	}
-	return false;
+	return 0;
 }

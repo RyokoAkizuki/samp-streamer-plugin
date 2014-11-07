@@ -227,12 +227,12 @@ bool Utility::isPointInArea(const Eigen::Vector3f &point, const Item::SharedArea
 	return false;
 }
 
-void Utility::convertArrayToPolygon(const std::vector<float>& points, Polygon2D &polygon)
+void Utility::convertArrayToPolygon(const std::vector<float>& src, Polygon2D &polygon)
 {
 	std::vector<Eigen::Vector2f> points;
-	for (std::size_t i = 0; i < points.size(); i += 2)
+	for (std::size_t i = 0; i < src.size(); i += 2)
 	{
-		points.push_back(Eigen::Vector2f(points[i], points[i + 1]));
+		points.push_back(Eigen::Vector2f(src[i], src[i + 1]));
 	}
 	boost::geometry::assign_points(polygon, points);
 	boost::geometry::correct(polygon);
