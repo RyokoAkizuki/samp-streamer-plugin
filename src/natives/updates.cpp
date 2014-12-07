@@ -58,7 +58,7 @@ bool Natives::Streamer_ToggleItemUpdate(int playerid, std::size_t type, bool tog
 	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
-		if (type >= 0 && type < STREAMER_MAX_TYPES)
+		if (type < STREAMER_MAX_TYPES)
 		{
 			p->second.enabledItems.set(type, toggle);
 			return false;
@@ -72,7 +72,7 @@ bool Natives::Streamer_IsToggleItemUpdate(int playerid, std::size_t type)
 	boost::unordered_map<int, Player>::iterator p = core->getData()->players.find(playerid);
 	if (p != core->getData()->players.end())
 	{
-		if (type >= 0 && type < STREAMER_MAX_TYPES)
+		if (type < STREAMER_MAX_TYPES)
 		{
 			return p->second.enabledItems.test(type);
 		}

@@ -43,7 +43,7 @@ bool Streamer_OnPlayerConnect(int playerid)
 	return true;
 }
 
-bool Streamer_OnPlayerDisconnect(int playerid, int reason)
+bool Streamer_OnPlayerDisconnect(int playerid, int /* reason */)
 {
 	core->getData()->players.erase(playerid);
 	return true;

@@ -31,7 +31,7 @@
 
 #include <string>
 
-int Natives::CreateDynamic3DTextLabel(const std::string& text, int color, float x, float y, float z, float drawdistance, int attachedplayer, int attachedvehicle, bool testlos, int worldid, int interiorid, int playerid, float streamdistance)
+int Natives::CreateDynamic3DTextLabel(const std::string& text, int color, float x, float y, float z, float /* drawdistance */, int attachedplayer, int attachedvehicle, bool testlos, int worldid, int interiorid, int playerid, float streamdistance)
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_3D_TEXT_LABEL) == core->getData()->textLabels.size())
 	{
